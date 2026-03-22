@@ -137,6 +137,16 @@ class DatabaseManager {
         }
     }
 
+    static func setCalorieGoal(_ goal: Int64) {
+        do {
+            try dbQueue.write { db in
+                try db.execute(sql: "UPDATE user SET caloriegoal = ? WHERE id = 1", arguments: [goal])
+            }
+        } catch {
+            print("Error updating caloriegoal: \(error)")
+        }
+    }
+
     static func getCurrentCalorieGoal() -> Int64 {
         do {
             return try dbQueue.read { db in
