@@ -12,6 +12,9 @@ struct Homepage: SwiftUI.View {
     @AppStorage("darkMode") private var darkMode: Bool = false
     @State private var apiKeyInput: String = ""
     @State private var apiKeySaved = false
+    @State private var calorieGoalInput: String = ""
+    @State private var calorieGoalSaved = false
+    @State private var currentCalorieGoal: Int64 = 2000
 
     var body: some SwiftUI.View {
         NavigationStack {
@@ -41,6 +44,51 @@ struct Homepage: SwiftUI.View {
                                 .fontWeight(.semibold)
                                 .foregroundStyle(Color.mBlue)
                         }.padding(.bottom, 20)
+
+                        // Manual Calorie Goal
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: "target")
+                                    .foregroundStyle(Color.mmaize)
+                                Text("Calorie Goal")
+                                    .font(.headline)
+                            }
+                            Text("Current goal: \(currentCalorieGoal) kcal/day")
+                                .font(.caption)
+                                .foregroundStyle(Color.gray)
+                            HStack {
+                                TextField("Enter calories (e.g. 2200)", text: $calorieGoalInput)
+                                    .textFieldStyle(.roundedBorder)
+                                    .keyboardType(.numberPad)
+                                Button("Set") {
+                                    if let goal = Int64(calorieGoalInput.trimmingCharacters(in: .whitespaces)), goal > 0 {
+                                        DatabaseManager.setCalorieGoal(goal)
+                                        currentCalorieGoal = goal
+                                        calorieGoalInput = ""
+                                        calorieGoalSaved = true
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                            calorieGoalSaved = false
+                                        }
+                                    }
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .tint(Color.mBlue)
+                                .disabled(Int64(calorieGoalInput.trimmingCharacters(in: .whitespaces)) == nil)
+                            }
+                            if calorieGoalSaved {
+                                Text("Calorie goal updated!")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.green)
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                        .padding(.top, 20)
+                        .onAppear {
+                            currentCalorieGoal = DatabaseManager.getCurrentCalorieGoal()
+                        }
 
                         // Calorie Calculator
                         NavigationLink(destination: Setup()) {
