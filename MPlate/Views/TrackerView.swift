@@ -45,11 +45,26 @@ struct Tracker: SwiftUI.View {
     @State private var trackerMenuItems: [AIMenuItem] = []
 
     @StateObject private var aiService = AIService()
+    @State private var refusedSuggestions: Set<String> = []
 
-    private func buildMenuItems(from menu: Menu?) -> [AIMenuItem] {
+    // Returns the active meal period name and label based on current hour
+    private var currentMealPeriod: (filter: String, label: String) {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 7..<11:  return ("BREAKFAST", "Breakfast (7–11 AM)")
+        case 11..<15: return ("LUNCH",     "Lunch / Brunch (11 AM–3 PM)")
+        case 15..<21: return ("DINNER",    "Dinner (3–9 PM)")
+        default:      return ("",          "All-day")
+        }
+    }
+
+    private func buildMenuItems(from menu: Menu?, mealFilter: String = "") -> [AIMenuItem] {
         guard let meals = menu?.meal else { return [] }
         var items: [AIMenuItem] = []
-        for meal in meals {
+        let filtered = mealFilter.isEmpty ? meals : meals.filter {
+            $0.name?.uppercased().contains(mealFilter.uppercased()) == true
+        }
+        for meal in filtered {
             if let courses = meal.course?.courseitem {
                 for course in courses {
                     for item in course.menuitem.item {
@@ -66,6 +81,45 @@ struct Tracker: SwiftUI.View {
             }
         }
         return items
+    }
+
+    private func buildTimeFilteredMenuItems(from menu: Menu?) -> [AIMenuItem] {
+        buildMenuItems(from: menu, mealFilter: currentMealPeriod.filter)
+    }
+
+    @MainActor
+    private func fetchAISuggestions() async {
+        let period = currentMealPeriod
+        // Rebuild menu items filtered to the current meal period + always include Other
+        var timeItems: [AIMenuItem] = []
+        MenuService.fetchMenu(diningHall: selectedDiningHall) { menu, _ in
+            timeItems = buildMenuItems(from: menu, mealFilter: period.filter)
+        }
+        let otherMenu = MenuService.loadOtherMenu(diningHall: selectedDiningHall)
+        timeItems += buildMenuItems(from: otherMenu)
+
+        let allEaten = (breakfastItems + lunchItems + dinnerItems).map {
+            let qty = Double($0.qty) ?? 1
+            let cal = Int(parseNutrientValue($0.kcal) * qty)
+            return "\($0.name) (qty \($0.qty)) — \(cal) cal"
+        }
+
+        await aiService.getTrackerSuggestions(
+            totalCalories: totalCalories,
+            totalProtein: totalProtein,
+            totalFat: totalFat,
+            totalCarbs: totalCarbs,
+            calorieGoal: Int(CalorieGoal),
+            proteinGoal: goalProtein,
+            fatGoal: goalFat,
+            carbGoal: goalCarbs,
+            diningHall: selectedDiningHall,
+            menuItems: timeItems.isEmpty ? trackerMenuItems : timeItems,
+            alreadyEaten: allEaten,
+            healthGoals: healthGoals,
+            refusedItems: Array(refusedSuggestions),
+            mealPeriod: period.label
+        )
     }
 
     private func recalculateTotals() {
@@ -205,28 +259,7 @@ struct Tracker: SwiftUI.View {
                             .fontWeight(.semibold)
                         Spacer()
                         Button {
-                            Task {
-                                // Only exclude meal items (B/L/D) from re-suggestion; "Other" staples (fruit, condiments, etc.) are fair game
-                                let allEaten = (breakfastItems + lunchItems + dinnerItems).map {
-                                    let qty = Double($0.qty) ?? 1
-                                    let cal = Int(parseNutrientValue($0.kcal) * qty)
-                                    return "\($0.name) (qty \($0.qty)) — \(cal) cal"
-                                }
-                                await aiService.getTrackerSuggestions(
-                                    totalCalories: totalCalories,
-                                    totalProtein: totalProtein,
-                                    totalFat: totalFat,
-                                    totalCarbs: totalCarbs,
-                                    calorieGoal: Int(CalorieGoal),
-                                    proteinGoal: goalProtein,
-                                    fatGoal: goalFat,
-                                    carbGoal: goalCarbs,
-                                    diningHall: selectedDiningHall,
-                                    menuItems: trackerMenuItems,
-                                    alreadyEaten: allEaten,
-                                    healthGoals: healthGoals
-                                )
-                            }
+                            Task { await fetchAISuggestions() }
                         } label: {
                             if aiService.isLoading {
                                 ProgressView()
@@ -261,18 +294,30 @@ struct Tracker: SwiftUI.View {
                                 if !s.recommendedItems.isEmpty {
                                     Divider().padding(.vertical, 2)
                                     ForEach(s.recommendedItems, id: \.name) { item in
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text(item.name)
-                                                .font(.caption)
-                                                .fontWeight(.semibold)
-                                                .fixedSize(horizontal: false, vertical: true)
-                                            Text("\(item.portion) · \(item.calories) cal")
-                                                .font(.caption2)
-                                                .foregroundStyle(Color.mBlue)
-                                            Text(item.reason)
-                                                .font(.caption2)
-                                                .foregroundStyle(Color.secondary)
-                                                .fixedSize(horizontal: false, vertical: true)
+                                        HStack(alignment: .top, spacing: 6) {
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text(item.name)
+                                                    .font(.caption)
+                                                    .fontWeight(.semibold)
+                                                    .fixedSize(horizontal: false, vertical: true)
+                                                Text("\(item.portion) · \(item.calories) cal")
+                                                    .font(.caption2)
+                                                    .foregroundStyle(Color.mBlue)
+                                                Text(item.reason)
+                                                    .font(.caption2)
+                                                    .foregroundStyle(Color.secondary)
+                                                    .fixedSize(horizontal: false, vertical: true)
+                                            }
+                                            Spacer()
+                                            Button {
+                                                refusedSuggestions.insert(item.name)
+                                                Task { await fetchAISuggestions() }
+                                            } label: {
+                                                Image(systemName: "xmark.circle.fill")
+                                                    .foregroundStyle(Color.secondary)
+                                                    .font(.caption)
+                                            }
+                                            .buttonStyle(.plain)
                                         }
                                         .padding(.vertical, 2)
                                     }
