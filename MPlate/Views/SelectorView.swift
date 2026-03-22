@@ -190,7 +190,13 @@ struct Selector: View {
                 ScrollView {
                     if let meals = menu?.meal {
                         if hallChanging == false {
-                            ForEach(meals.filter { $0.name?.lowercased() == mealAddingTo.lowercased() }, id: \.name) { meal in
+                            ForEach(meals.filter { meal in
+                            let name = meal.name?.lowercased() ?? ""
+                            let target = mealAddingTo.lowercased()
+                            // Treat "brunch" as a match for "lunch" on weekends
+                            if target == "lunch" { return name == "lunch" || name == "brunch" }
+                            return name == target
+                        }, id: \.name) { meal in
                                 if meal.course != nil {
                                     Button(action: { withAnimation { mealExpanded.toggle() } }) {
                                         HStack {
