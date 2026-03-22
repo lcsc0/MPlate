@@ -7,11 +7,13 @@
 
 import SwiftUI
 import GRDB
+import Charts
 
 struct Homepage: SwiftUI.View {
     @EnvironmentObject var toggleManager: ToggleManager
     @State private var showAlert: Bool = false // Control alert visibility
     @AppStorage("anthropicApiKey") private var anthropicApiKey: String = ""
+    @AppStorage("darkMode") private var darkMode: Bool = false
     @State private var apiKeyInput: String = ""
     @State private var apiKeySaved = false
 
@@ -44,7 +46,51 @@ struct Homepage: SwiftUI.View {
                                 .fontWeight(.semibold)
                                 .foregroundStyle(Color.mBlue)
                         }.padding(.bottom, 20)
-                        Setup()
+                        // ── Calorie Calculator ───────────────────────────
+                        NavigationLink(destination: Setup()) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Image(systemName: "flame.fill")
+                                        .foregroundStyle(Color.mmaize)
+                                    Text("Calorie Calculator")
+                                        .font(.headline)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .foregroundStyle(Color.gray)
+                                        .font(.caption)
+                                }
+                                Text("Calculate your TDEE and set a calorie goal based on your stats and activity level.")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.gray)
+                            }
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(12)
+                            .padding(.horizontal)
+                            .padding(.top, 20)
+                        }
+                        .buttonStyle(.plain)
+
+                        // ── Appearance ───────────────────────────────────
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: "moon.fill")
+                                    .foregroundStyle(Color.mBlue)
+                                Text("Dark Mode")
+                                    .font(.headline)
+                                Spacer()
+                                Toggle("", isOn: $darkMode)
+                                    .labelsHidden()
+                            }
+                            Text("Forces dark mode regardless of system setting.")
+                                .font(.caption)
+                                .foregroundStyle(Color.gray)
+                        }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                        .padding(.top, 20)
 
                         // ── Anthropic API Key ────────────────────────────
                         VStack(alignment: .leading, spacing: 8) {
@@ -133,9 +179,39 @@ struct Homepage: SwiftUI.View {
                 }
             
         }.navigationBarBackButtonHidden()
+        .preferredColorScheme(darkMode ? .dark : nil)
     }
 
     struct History: SwiftUI.View {
+
+        enum TrendPeriod: String, CaseIterable {
+            case oneWeek = "1W"
+            case oneMonth = "1M"
+            case threeMonths = "3M"
+            case sixMonths = "6M"
+            case oneYear = "1Y"
+
+            var days: Int {
+                switch self {
+                case .oneWeek:     return 7
+                case .oneMonth:    return 30
+                case .threeMonths: return 90
+                case .sixMonths:   return 180
+                case .oneYear:     return 365
+                }
+            }
+        }
+
+        struct DayCalories: Identifiable {
+            let id = UUID()
+            let date: String
+            let calories: Int
+            var dateValue: Date {
+                let f = DateFormatter()
+                f.dateFormat = "yyyy-MM-dd"
+                return f.date(from: date) ?? Date()
+            }
+        }
 
         // Define state variables to store food items for each meal
         @State private var breakfastItems: [FoodItem] = []
@@ -148,6 +224,8 @@ struct Homepage: SwiftUI.View {
         @State private var totalCarbs: Int = 0
         @State private var CalorieGoal: Int64 = 2000
         @State private var selectedDate: Date = Date()
+        @State private var calorieTrend: [DayCalories] = []
+        @State private var trendPeriod: TrendPeriod = .oneMonth
 
         
         // Function to get the current date in "yyyy-MM-dd" format
@@ -287,8 +365,43 @@ struct Homepage: SwiftUI.View {
         }
         
         
+        private func loadCalorieTrend() {
+            do {
+                let cutoff = Calendar.current.date(byAdding: .day, value: -trendPeriod.days, to: Date()) ?? Date()
+                let f = DateFormatter()
+                f.dateFormat = "yyyy-MM-dd"
+                let cutoffStr = f.string(from: cutoff)
+
+                let rows = try dbQueue.read { db -> [(String, String, String)] in
+                    let query = """
+                    SELECT m.date, fi.kcal, fi.qty
+                    FROM fooditems fi
+                    JOIN meals m ON fi.meal_id = m.id
+                    WHERE m.date >= ?
+                    ORDER BY m.date
+                    """
+                    return try Row.fetchAll(db, sql: query, arguments: [cutoffStr]).map { row in
+                        (row["date"] as! String, row["kcal"] as! String, row["qty"] as! String)
+                    }
+                }
+                var dateTotals: [String: Int] = [:]
+                for (date, kcal, qty) in rows {
+                    let kcalStr = kcal.replacingOccurrences(of: "kcal", with: "").trimmingCharacters(in: .whitespaces)
+                    let kcalVal = Double(kcalStr) ?? 0
+                    let qtyVal = Double(qty) ?? 1
+                    dateTotals[date, default: 0] += Int(kcalVal * qtyVal)
+                }
+                calorieTrend = dateTotals.sorted(by: { $0.key < $1.key }).map {
+                    DayCalories(date: $0.key, calories: $0.value)
+                }
+            } catch {
+                print("Error loading calorie trend: \(error)")
+            }
+        }
+
         private func refreshView() {
             getCurrentCalorieGoal()
+            loadCalorieTrend()
             getFoodItemsForMeal(mealname: "Breakfast") { items in
                 breakfastItems = items
             }
@@ -393,6 +506,67 @@ struct Homepage: SwiftUI.View {
                             .progressViewStyle(LinearProgressViewStyle())
                             .frame(width: 400)
                             .padding(6)
+
+                        // Calorie trend chart
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text("Calorie Trend")
+                                    .font(.headline)
+                                Spacer()
+                                Picker("Period", selection: $trendPeriod) {
+                                    ForEach(TrendPeriod.allCases, id: \.self) { p in
+                                        Text(p.rawValue).tag(p)
+                                    }
+                                }
+                                .pickerStyle(.segmented)
+                                .frame(width: 220)
+                            }
+                            .padding(.horizontal)
+                            .onChange(of: trendPeriod) { _, _ in loadCalorieTrend() }
+                            if !calorieTrend.isEmpty {
+                                Chart {
+                                    ForEach(calorieTrend) { point in
+                                        LineMark(
+                                            x: .value("Date", point.dateValue),
+                                            y: .value("Calories", point.calories)
+                                        )
+                                        .foregroundStyle(Color.mBlue)
+                                        .interpolationMethod(.catmullRom)
+                                        AreaMark(
+                                            x: .value("Date", point.dateValue),
+                                            y: .value("Calories", point.calories)
+                                        )
+                                        .foregroundStyle(Color.mBlue.opacity(0.15))
+                                        .interpolationMethod(.catmullRom)
+                                    }
+                                    if CalorieGoal > 0 {
+                                        RuleMark(y: .value("Goal", CalorieGoal))
+                                            .foregroundStyle(Color.mmaize.opacity(0.8))
+                                            .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 3]))
+                                            .annotation(position: .top, alignment: .trailing) {
+                                                Text("Goal")
+                                                    .font(.caption2)
+                                                    .foregroundStyle(Color.mmaize)
+                                            }
+                                    }
+                                }
+                                .frame(height: 160)
+                                .padding(.horizontal)
+                                .chartXAxis {
+                                    AxisMarks(values: .automatic) { _ in
+                                        AxisGridLine()
+                                        AxisValueLabel(format: .dateTime.month(.abbreviated).day())
+                                    }
+                                }
+                            } else {
+                                Text("No data logged in this period")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.secondary)
+                                    .frame(height: 160)
+                                    .frame(maxWidth: .infinity)
+                            }
+                        }
+                        .padding(.vertical, 8)
 
                         // DatePicker for selecting a date
                         DatePicker("Select Date:", selection: $selectedDate, displayedComponents: .date)
@@ -516,51 +690,8 @@ struct Homepage: SwiftUI.View {
                             
                             
                         }
-                        VStack{
-                            HStack{
-                                Text("Other")
-                                    .font(.title2)
-                                    .multilineTextAlignment(.leading)
-                                    .padding(.leading, 123.0)
-                                Spacer()
-                                
-                                
-                                
-                            }.foregroundStyle(Color.white)
-                                .frame(width:360, height:60)
-                                .background(Color.mBlue)
-                                .clipShape(RoundedRectangle(cornerSize: CGSize(width: 13, height: 10)))
-                            ForEach(otherItems, id: \.id) { item in
-                                HStack{
-                                    Text(item.name + " (\(item.kcal.dropLast(4)) Cal)")
-                                    
-                                    NavigationLink(destination: NutritionViewer(name: item.name, kcal: item.kcal, pro: item.pro, fat: item.fat, cho: item.cho, serving: item.serving)){
-                                        Image(systemName: "info.circle")
-                                            .resizable()
-                                            .frame(width: 15, height: 15)
-                                            
-                                        
-                                    }
-                                    Spacer()
-                                    Text("x" + item.qty)
-                                        .padding(.trailing, 8)
-                                   
-                                        
-                                        
- 
-                                }.padding(.leading,15)
-                                    .padding(.trailing,15)
-                                    .padding(.vertical,8)
-                                    
-                                Divider()
-                                    
-                            }
-                            
-                            
-                        }
-
                     }
-                    
+
                 }
                 .onAppear {
                     refreshView()
@@ -1150,64 +1281,7 @@ struct Homepage: SwiftUI.View {
                             
                             
                         }
-                        VStack{
-                            HStack{
-                                Text("Other")
-                                    .font(.title2)
-                                    .multilineTextAlignment(.leading)
-                                    .padding(.leading, 123.0)
-                                Spacer()
-                                NavigationLink(destination:Selector(mealAddingTo: "Other")){
-                                    Image(systemName:"plus.app.fill")
-                                        .resizable()
-                                        .frame(width:35, height: 35)
-                                        .foregroundStyle(Color.mmaize)
-                                        .padding(16)
-                                }
-                                
-                                
-                                
-                            }.foregroundStyle(Color.white)
-                                .frame(width:360, height:60)
-                                .background(Color.mBlue)
-                                .clipShape(RoundedRectangle(cornerSize: CGSize(width: 13, height: 10)))
-                            ForEach(otherItems, id: \.id) { item in
-                                HStack{
-                                    Text(item.name + " (\(item.kcal.dropLast(4)) Cal)")
-                                    
-                                    NavigationLink(destination: NutritionViewer(name: item.name, kcal: item.kcal, pro: item.pro, fat: item.fat, cho: item.cho, serving: item.serving)){
-                                        Image(systemName: "info.circle")
-                                            .resizable()
-                                            .frame(width: 15, height: 15)
-                                            
-                                        
-                                    }
-                                    Spacer()
-                                    Text("x" + item.qty)
-                                        .padding(.trailing, 8)
-                                    Button(action: {
-                                        DeleteItem(item: item) // Call DeleteItem when the button is pressed
-                                    }) {
-                                        Image(systemName: "trash")
-                                            .resizable()
-                                            .foregroundStyle(Color.mBlue)
-                                            .frame(width: 20, height: 25)
-                                    }
-                                        
-                                        
- 
-                                }.padding(.leading,15)
-                                    .padding(.trailing,15)
-                                    .padding(.vertical,8)
-                                    
-                                Divider()
-                                    
-                            }
-                            
-                            
-                        }
-
-                    } 
+                    }
                 }
                 .onAppear {
                     // Fetch food items for each meal when the view appears
@@ -1220,13 +1294,10 @@ struct Homepage: SwiftUI.View {
                     getFoodItemsForMeal(mealname: "Dinner") { items in
                         dinnerItems = items
                     }
-                    getFoodItemsForMeal(mealname: "Other") { items in
-                        otherItems = items
-                    }
-                    totalCalories = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "kcal")
-                    totalProtein = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "pro")
-                    totalFat = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "fat")
-                    totalCarbs = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "cho")
+                    totalCalories = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, nutrientKey: "kcal")
+                    totalProtein = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, nutrientKey: "pro")
+                    totalFat = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, nutrientKey: "fat")
+                    totalCarbs = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, nutrientKey: "cho")
                     getCurrentCalorieGoal()
                 }
                 Spacer()
@@ -1311,7 +1382,7 @@ struct Info: SwiftUI.View {
                     .foregroundStyle(Color.mBlue)
             }.padding(.top, 50.0)
             Spacer()
-            Text("M-Cals is an application created using the \nU-M Dining API to provide a way to easily and more accurately track calories & macros from foods eaten in U-M dining halls.\n\nYou must be connected to the U-M WiFi for the app to function properly.\n\nM-Cals is not an official U-M application and is not affiliated with U-M in any way.\n\nDisclaimer: The calorie and nutrition information provided by this app is intended for general informational purposes only, and is not intended for use in managing medical conditions or making health decisions. \n\nAny questions can be directed to me at: pattgrantm@gmail.com")
+            Text("M-Cals is an application created using the \nU-M Dining API to provide a way to easily and more accurately track calories & macros from foods eaten in U-M dining halls.\n\nYou must be connected to the U-M WiFi for the app to function properly.\n\nM-Cals is not an official U-M application and is not affiliated with U-M in any way.\n\nDisclaimer: The calorie and nutrition information provided by this app is intended for general informational purposes only, and is not intended for use in managing medical conditions or making health decisions. \n")
                 .padding(.bottom, 50.0)
                 .padding(.horizontal, 25.0)
             Spacer()
