@@ -213,35 +213,41 @@ struct Tracker: SwiftUI.View {
                             .font(.caption)
                             .foregroundStyle(Color.red)
                     } else if let s = aiService.suggestion {
-                        Text(s.summary)
-                            .font(.caption)
-                            .foregroundStyle(Color.secondary)
-                        ForEach(s.tips, id: \.self) { tip in
-                            HStack(alignment: .top, spacing: 6) {
-                                Text("•").foregroundStyle(Color.mBlue)
-                                Text(tip).font(.caption)
-                            }
-                        }
-                        if !s.recommendedItems.isEmpty {
-                            Divider().padding(.vertical, 2)
-                            ForEach(s.recommendedItems, id: \.name) { item in
-                                HStack(alignment: .top, spacing: 8) {
-                                    VStack(alignment: .leading, spacing: 1) {
-                                        Text(item.name)
-                                            .font(.caption)
-                                            .fontWeight(.semibold)
-                                        Text("\(item.portion) · \(item.calories) cal")
-                                            .font(.caption2)
-                                            .foregroundStyle(Color.mBlue)
-                                        Text(item.reason)
-                                            .font(.caption2)
-                                            .foregroundStyle(Color.secondary)
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(s.summary)
+                                    .font(.caption)
+                                    .foregroundStyle(Color.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                ForEach(s.tips, id: \.self) { tip in
+                                    HStack(alignment: .top, spacing: 6) {
+                                        Text("•").foregroundStyle(Color.mBlue)
+                                        Text(tip).font(.caption)
+                                            .fixedSize(horizontal: false, vertical: true)
                                     }
-                                    Spacer()
                                 }
-                                .padding(.vertical, 2)
+                                if !s.recommendedItems.isEmpty {
+                                    Divider().padding(.vertical, 2)
+                                    ForEach(s.recommendedItems, id: \.name) { item in
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(item.name)
+                                                .font(.caption)
+                                                .fontWeight(.semibold)
+                                                .fixedSize(horizontal: false, vertical: true)
+                                            Text("\(item.portion) · \(item.calories) cal")
+                                                .font(.caption2)
+                                                .foregroundStyle(Color.mBlue)
+                                            Text(item.reason)
+                                                .font(.caption2)
+                                                .foregroundStyle(Color.secondary)
+                                                .fixedSize(horizontal: false, vertical: true)
+                                        }
+                                        .padding(.vertical, 2)
+                                    }
+                                }
                             }
                         }
+                        .frame(maxHeight: 200)
                     }
                 }
                 .padding(12)
