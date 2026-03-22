@@ -51,8 +51,9 @@ struct History: SwiftUI.View {
 
     var body: some SwiftUI.View {
         NavigationStack {
-            VStack {
-                VStack {
+            VStack(spacing: 0) {
+                // Fixed top bar — macros only
+                VStack(spacing: 4) {
                     HStack {
                         VStack {
                             Text("Calories").bold()
@@ -70,23 +71,17 @@ struct History: SwiftUI.View {
                             Text("Carbs").bold()
                             Text("\(totalCarbs)")
                         }.font(.title3).padding(.horizontal, 6)
-                        VStack {
-                            VStack {
-                                Text(String(formatNumberWithCommas(Int(CalorieGoal - Int64(totalCalories))) ?? ""))
-                                    .bold()
-                                Text("Left")
-                            }
-                            .padding(5)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.primary.opacity(0.3), lineWidth: 0.5)
-                            )
-                        }.padding(.horizontal, 6)
                     }
                     ProgressView(value: (Double(totalCalories) / Double(CalorieGoal)))
                         .progressViewStyle(LinearProgressViewStyle())
                         .frame(width: 400)
-                        .padding(6)
+                        .padding(.bottom, 6)
+                }
+                .padding(.top, 8)
+
+                // Everything below is scrollable
+                ScrollView {
+                    VStack(spacing: 0) {
 
                     // Calorie trend chart
                     VStack(alignment: .leading, spacing: 4) {
@@ -154,9 +149,8 @@ struct History: SwiftUI.View {
                     DatePicker("Select Date:", selection: $selectedDate, displayedComponents: .date)
                         .datePickerStyle(GraphicalDatePickerStyle())
                         .padding()
-                }
 
-                ScrollView {
+                    // Meal sections
                     VStack {
                         HStack {
                             Text("Breakfast")
@@ -247,7 +241,8 @@ struct History: SwiftUI.View {
                             Divider()
                         }
                     }
-                }
+                    } // end inner VStack
+                } // end ScrollView
             }
             .onAppear {
                 refreshView()
@@ -255,7 +250,6 @@ struct History: SwiftUI.View {
             .onChange(of: selectedDate) { oldValue, newValue in
                 refreshView()
             }
-            Spacer()
         }
     }
 }
