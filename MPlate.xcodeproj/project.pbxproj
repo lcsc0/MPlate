@@ -37,6 +37,7 @@
 		4C1D5A94922CA1BBBA7D0E0B /* FoodSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553FA2B2A4AD6EE27FDE8AF3 /* FoodSearchService.swift */; };
 		55546871C8381B39F79B42C9 /* TDEEModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135897D38E72F7229439629F /* TDEEModels.swift */; };
 		7548ACE117A5AE17B89397B1 /* ToggleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A93E476B1B5583D9137676 /* ToggleManager.swift */; };
+		CC11DD22EE33FF4400AA11BB /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD22EE33FF4400AA11BB22CC /* ViewExtensions.swift */; };
 		7A428015DAEC10A550C8B396 /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D536DAA064981A40CA1626A1 /* SetupView.swift */; };
 		88B7F0B6B4F363EFC2CA232C /* TrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719F61A5216AE62B8915CFA0 /* TrackerView.swift */; };
 		8B4E804F0AE31DF616F96C47 /* Pods_MPlate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79DD65AEBAFECC54C2087AF2 /* Pods_MPlate.framework */; };
@@ -81,6 +82,7 @@
 		AA0009090909090909090909 /* Twigs_at_Oxford_other.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Twigs_at_Oxford_other.json; sourceTree = "<group>"; };
 		31AA10042CF4567C004C3380 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		34A93E476B1B5583D9137676 /* ToggleManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ToggleManager.swift; sourceTree = "<group>"; };
+		DD22EE33FF4400AA11BB22CC /* ViewExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
 		47EC3D802A4F4E3456DC1641 /* SelectorView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SelectorView.swift; sourceTree = "<group>"; };
 		4DB29E0BBD35F5E27B47BD2B /* MenuModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MenuModels.swift; sourceTree = "<group>"; };
 		553FA2B2A4AD6EE27FDE8AF3 /* FoodSearchService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FoodSearchService.swift; sourceTree = "<group>"; };
@@ -130,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				34A93E476B1B5583D9137676 /* ToggleManager.swift */,
+				DD22EE33FF4400AA11BB22CC /* ViewExtensions.swift */,
 			);
 			name = Utilities;
 			path = Utilities;
@@ -405,6 +408,7 @@
 				90A0F6CB9A47DACDDA0F5976 /* CustomFoodView.swift in Sources */,
 				D0B2DF84B1A35948C3FFB092 /* AIRecommendationsSheet.swift in Sources */,
 				7548ACE117A5AE17B89397B1 /* ToggleManager.swift in Sources */,
+				CC11DD22EE33FF4400AA11BB /* ViewExtensions.swift in Sources */,
 				9D4756F3962F9FFF129188DE /* MPlateApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -218,6 +218,7 @@ struct Homepage: SwiftUI.View {
         }
         .navigationBarBackButtonHidden()
         .preferredColorScheme(darkMode ? .dark : nil)
+        .hideKeyboardOnTap()
     }
 }
 
