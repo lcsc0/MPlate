@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1FA7DB4E7EEF75C56CE11DC5 /* Pods_M_Cals.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B7554FDE17128EA77C1AAD1 /* Pods_M_Cals.framework */; };
 		313594742D2A020200AF9D5F /* special_menu.json in Resources */ = {isa = PBXBuildFile; fileRef = 313594732D2A020200AF9D5F /* special_menu.json */; };
 		3145F1BB2CBF4B6E00946A34 /* JsonTesting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3145F1BA2CBF4B6E00946A34 /* JsonTesting.swift */; };
 		3145F1BD2CC3500500946A34 /* Selector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3145F1BC2CC3500500946A34 /* Selector.swift */; };
@@ -26,15 +25,15 @@
 		31937F232D3191DF00397676 /* East_Quad_Dining_Hall.json in Resources */ = {isa = PBXBuildFile; fileRef = 31937F1B2D3191DF00397676 /* East_Quad_Dining_Hall.json */; };
 		31937F242D3191DF00397676 /* North_Quad_Dining_Hall.json in Resources */ = {isa = PBXBuildFile; fileRef = 31937F1D2D3191DF00397676 /* North_Quad_Dining_Hall.json */; };
 		31937F252D3191DF00397676 /* Twigs_at_Oxford.json in Resources */ = {isa = PBXBuildFile; fileRef = 31937F1F2D3191DF00397676 /* Twigs_at_Oxford.json */; };
-		319D4FA92DC1F21400E025CE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 319D4FA82DC1F21400E025CE /* GoogleService-Info.plist */; };
 		31EE8D482D401C3F0036C267 /* Custom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31EE8D472D401C3F0036C267 /* Custom.swift */; };
+		8B4E804F0AE31DF616F96C47 /* Pods_MPlate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79DD65AEBAFECC54C2087AF2 /* Pods_MPlate.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		313594732D2A020200AF9D5F /* special_menu.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = special_menu.json; sourceTree = "<group>"; };
 		3145F1BA2CBF4B6E00946A34 /* JsonTesting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonTesting.swift; sourceTree = "<group>"; };
 		3145F1BC2CC3500500946A34 /* Selector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Selector.swift; sourceTree = "<group>"; };
-		3172A12F2CBC4CD400BDD5BC /* MPlate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MPlate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3172A12F2CBC4CD400BDD5BC /* MPlate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MPlate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3172A1322CBC4CD400BDD5BC /* MPlateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPlateApp.swift; sourceTree = "<group>"; };
 		3172A1342CBC4CD400BDD5BC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3172A1362CBC4CD500BDD5BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -50,10 +49,9 @@
 		31937F1D2D3191DF00397676 /* North_Quad_Dining_Hall.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = North_Quad_Dining_Hall.json; sourceTree = "<group>"; };
 		31937F1E2D3191DF00397676 /* South_Quad_Dining_Hall.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = South_Quad_Dining_Hall.json; sourceTree = "<group>"; };
 		31937F1F2D3191DF00397676 /* Twigs_at_Oxford.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Twigs_at_Oxford.json; sourceTree = "<group>"; };
-		319D4FA82DC1F21400E025CE /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		31AA10042CF4567C004C3380 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		31EE8D472D401C3F0036C267 /* Custom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Custom.swift; sourceTree = "<group>"; };
-		6B7554FDE17128EA77C1AAD1 /* Pods_M_Cals.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_M_Cals.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		79DD65AEBAFECC54C2087AF2 /* Pods_MPlate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MPlate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		99A7ADAAAC611665522474C5 /* Pods-MPlate.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MPlate.release.xcconfig"; path = "Target Support Files/Pods-MPlate/Pods-MPlate.release.xcconfig"; sourceTree = "<group>"; };
 		C9A13DF557411D6B023F0541 /* Pods-MPlate.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MPlate.debug.xcconfig"; path = "Target Support Files/Pods-MPlate/Pods-MPlate.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -63,7 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1FA7DB4E7EEF75C56CE11DC5 /* Pods_M_Cals.framework in Frameworks */,
+				8B4E804F0AE31DF616F96C47 /* Pods_MPlate.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,7 +90,6 @@
 			isa = PBXGroup;
 			children = (
 				31AA10042CF4567C004C3380 /* Info.plist */,
-				319D4FA82DC1F21400E025CE /* GoogleService-Info.plist */,
 				3172A1322CBC4CD400BDD5BC /* MPlateApp.swift */,
 				3172A1462CBDA6A800BDD5BC /* Homepage.swift */,
 				3172A1342CBC4CD400BDD5BC /* ContentView.swift */,
@@ -113,7 +110,7 @@
 				3172A1362CBC4CD500BDD5BC /* Assets.xcassets */,
 				3172A1382CBC4CD500BDD5BC /* Preview Content */,
 			);
-			path = "MPlate";
+			path = MPlate;
 			sourceTree = "<group>";
 		};
 		3172A1382CBC4CD500BDD5BC /* Preview Content */ = {
@@ -127,7 +124,7 @@
 		33313B23521A7772A93F2A98 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				6B7554FDE17128EA77C1AAD1 /* Pods_M_Cals.framework */,
+				79DD65AEBAFECC54C2087AF2 /* Pods_MPlate.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -158,7 +155,7 @@
 			);
 			dependencies = (
 			);
-			name = "MPlate";
+			name = MPlate;
 			productName = MPlate;
 			productReference = 3172A12F2CBC4CD400BDD5BC /* MPlate.app */;
 			productType = "com.apple.product-type.application";
@@ -201,7 +198,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				319D4FA92DC1F21400E025CE /* GoogleService-Info.plist in Resources */,
 				31937F202D3191DF00397676 /* Bursley_Dining_Hall.json in Resources */,
 				31937F212D3191DF00397676 /* Martha_Cook_Dining_Hall.json in Resources */,
 				31937F222D3191DF00397676 /* South_Quad_Dining_Hall.json in Resources */,
@@ -410,7 +406,7 @@
 				DEVELOPMENT_TEAM = Q8344KAJF2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "MPlate/Info.plist";
+				INFOPLIST_FILE = MPlate/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -423,7 +419,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.lucas.MPlate";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucas.MPlate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -447,7 +443,7 @@
 				DEVELOPMENT_TEAM = Q8344KAJF2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "MPlate/Info.plist";
+				INFOPLIST_FILE = MPlate/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -460,7 +456,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.lucas.MPlate";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucas.MPlate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
