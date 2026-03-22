@@ -27,9 +27,9 @@ struct Homepage: SwiftUI.View {
                     .tabItem {
                         Label("History", systemImage: "calendar")
                     }
-                Info()
+                BarcodeScanView()
                     .tabItem {
-                        Label("Info", systemImage: "info.circle")
+                        Label("Scan", systemImage: "barcode.viewfinder")
                     }
                 ScrollView {
                     VStack(spacing: 0) {
@@ -182,6 +182,31 @@ struct Homepage: SwiftUI.View {
                         .cornerRadius(12)
                         .padding(.horizontal)
                         .padding(.top, 20)
+
+                        // About & Privacy
+                        NavigationLink(destination: Info()) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Image(systemName: "info.circle")
+                                        .foregroundStyle(Color.mBlue)
+                                    Text("About & Privacy Policy")
+                                        .font(.headline)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .foregroundStyle(Color.gray)
+                                        .font(.caption)
+                                }
+                                Text("App info, disclaimers, and privacy policy.")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.gray)
+                            }
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(12)
+                            .padding(.horizontal)
+                            .padding(.top, 20)
+                        }
+                        .buttonStyle(.plain)
 
                         Spacer()
                     }
