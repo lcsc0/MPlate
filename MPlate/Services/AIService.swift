@@ -95,7 +95,7 @@ class AIService: ObservableObject {
                 suggestion = MealSuggestion(summary: raw, tips: [], recommendedItems: [])
             }
         } catch {
-            errorMessage = "AI unavailable. Check your API key and network connection."
+            errorMessage = "AI error: \(error.localizedDescription)"
         }
 
         isLoading = false
@@ -159,7 +159,7 @@ class AIService: ObservableObject {
                 suggestion = MealSuggestion(summary: raw, tips: [], recommendedItems: [])
             }
         } catch {
-            errorMessage = "AI unavailable. Check your API key and network connection."
+            errorMessage = "AI error: \(error.localizedDescription)"
         }
 
         isLoading = false
@@ -176,7 +176,7 @@ class AIService: ObservableObject {
         request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
 
         let body: [String: Any] = [
-            "model": "claude-haiku-4-5-20251001",
+            "model": "claude-3-5-haiku-20241022",
             "max_tokens": 600,
             "system": system,
             "messages": [["role": "user", "content": user]]
@@ -184,8 +184,12 @@ class AIService: ObservableObject {
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let (data, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+        guard let http = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
+        }
+        if http.statusCode != 200 {
+            let body = String(data: data, encoding: .utf8) ?? "unknown error"
+            throw NSError(domain: "AIService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: "API error \(http.statusCode): \(body)"])
         }
 
         struct ClaudeResponse: Codable {
