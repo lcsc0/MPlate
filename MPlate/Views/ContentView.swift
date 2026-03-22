@@ -10,13 +10,13 @@ struct ContentView: View {
         NavigationStack {
             VStack {
                 HStack {
-                    Text("Welcome to ")
+                    Text("Welcome to")
                         .font(.title)
-                    Text("M")
+                    Text("Maize")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundStyle(Color.mmaize)
-                    Text("Cals")
+                    Text("Plate")
                         .font(.largeTitle)
                         .fontWeight(.semibold)
                         .foregroundStyle(Color.mBlue)
