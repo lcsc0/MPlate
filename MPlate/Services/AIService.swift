@@ -57,8 +57,13 @@ class AIService: ObservableObject {
         totalFat: Int,
         totalCarbs: Int,
         calorieGoal: Int,
+        proteinGoal: Int,
+        fatGoal: Int,
+        carbGoal: Int,
         diningHall: String,
-        menuItems: [AIMenuItem]
+        menuItems: [AIMenuItem],
+        alreadyEaten: [String],
+        healthGoals: String
     ) async {
         guard !apiKey.isEmpty else {
             errorMessage = "Add your Anthropic API key in Settings to enable AI suggestions."
@@ -69,9 +74,18 @@ class AIService: ObservableObject {
         errorMessage = nil
         suggestion = nil
 
-        let remaining = max(0, calorieGoal - totalCalories)
-        let remainingPro = max(0, 150 - totalProtein)
+        let remaining    = max(0, calorieGoal  - totalCalories)
+        let remainingPro = max(0, proteinGoal  - totalProtein)
+        let remainingFat = max(0, fatGoal      - totalFat)
+        let remainingCarb = max(0, carbGoal    - totalCarbs)
         let pct = calorieGoal > 0 ? Int(Double(totalCalories) / Double(calorieGoal) * 100) : 0
+
+        let eatenSection: String
+        if alreadyEaten.isEmpty {
+            eatenSection = "Nothing logged yet today."
+        } else {
+            eatenSection = alreadyEaten.joined(separator: "\n")
+        }
 
         let menuList: String
         if menuItems.isEmpty {
@@ -82,29 +96,37 @@ class AIService: ObservableObject {
             }.joined(separator: "\n")
         }
 
+        let goalsLine = healthGoals.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            ? "None specified."
+            : healthGoals
+
         let userMessage = """
         Dining hall: \(diningHall)
 
-        Today's nutrition so far:
-        - Calories: \(totalCalories) / \(calorieGoal) (\(pct)% of goal, \(remaining) cal remaining)
-        - Protein: \(totalProtein)g (approx \(remainingPro)g still needed)
-        - Fat: \(totalFat)g
-        - Carbs: \(totalCarbs)g
+        User's health goals: \(goalsLine)
+
+        Daily targets: \(calorieGoal) cal | \(proteinGoal)g protein | \(fatGoal)g fat | \(carbGoal)g carbs
+
+        Already eaten today:
+        \(eatenSection)
+
+        Remaining budget: \(remaining) cal | \(remainingPro)g protein | \(remainingFat)g fat | \(remainingCarb)g carbs (\(pct)% of calorie goal used)
 
         Available items today (name | serving size | calories | protein | fat | carbs):
         \(menuList)
 
-        Recommend 3–5 specific items from the list above that best fill my remaining \(remaining) calories and \(remainingPro)g protein. Include exactly how much to eat (e.g. "1 serving", "2 scoops") and why.
+        Based on what the user has already eaten and their health goals, recommend 3–5 specific items from the list above that best fill their remaining budget. Avoid suggesting items they already logged. Include exact portion and brief reason.
         """
 
         let systemPrompt = """
-        You are a concise nutrition coach for a University of Michigan student eating in dining halls today.
+        You are a concise, personalized nutrition coach for a University of Michigan student eating in dining halls.
+        Always consider the user's stated health goals and what they have already eaten today.
         Recommend specific items from the EXACT list provided — do not invent items.
         Use item names EXACTLY as written. Each suggestion must include a concrete portion amount.
         Respond with valid JSON only:
         {
-          "summary": "one sentence overview of the plan",
-          "tips": ["one brief tip if calories are very low or very high, otherwise empty array"],
+          "summary": "one sentence tailored to the user's health goals and remaining budget",
+          "tips": ["one brief tip relevant to their goals if applicable, otherwise empty array"],
           "recommendedItems": [
             {"name": "exact item name", "reason": "why + how much in under 12 words", "calories": 000, "portion": "e.g. 1 cup or 2 slices"}
           ]

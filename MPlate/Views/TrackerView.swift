@@ -40,6 +40,7 @@ struct Tracker: SwiftUI.View {
     @State private var totalPotassium: Int = 0
 
     @AppStorage("selectedDiningHall") private var selectedDiningHall: String = "Mosher Jordan Dining Hall"
+    @AppStorage("healthGoals") private var healthGoals: String = ""
     @State private var showHallPickerSheet = false
     @State private var trackerMenuItems: [AIMenuItem] = []
 
@@ -205,14 +206,24 @@ struct Tracker: SwiftUI.View {
                         Spacer()
                         Button {
                             Task {
+                                let allEaten = (breakfastItems + lunchItems + dinnerItems + otherItems).map {
+                                    let qty = Double($0.qty) ?? 1
+                                    let cal = Int(parseNutrientValue($0.kcal) * qty)
+                                    return "\($0.name) (qty \($0.qty)) — \(cal) cal"
+                                }
                                 await aiService.getTrackerSuggestions(
                                     totalCalories: totalCalories,
                                     totalProtein: totalProtein,
                                     totalFat: totalFat,
                                     totalCarbs: totalCarbs,
                                     calorieGoal: Int(CalorieGoal),
+                                    proteinGoal: goalProtein,
+                                    fatGoal: goalFat,
+                                    carbGoal: goalCarbs,
                                     diningHall: selectedDiningHall,
-                                    menuItems: trackerMenuItems
+                                    menuItems: trackerMenuItems,
+                                    alreadyEaten: allEaten,
+                                    healthGoals: healthGoals
                                 )
                             }
                         } label: {

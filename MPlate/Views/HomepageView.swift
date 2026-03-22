@@ -10,8 +10,11 @@ struct Homepage: SwiftUI.View {
     @State private var showAlert: Bool = false
     @AppStorage("anthropicApiKey") private var anthropicApiKey: String = ""
     @AppStorage("darkMode") private var darkMode: Bool = false
+    @AppStorage("healthGoals") private var healthGoals: String = ""
     @State private var apiKeyInput: String = ""
     @State private var apiKeySaved = false
+    @State private var healthGoalsDraft: String = ""
+    @State private var healthGoalsSaved = false
     @State private var calorieGoalInput: String = ""
     @State private var calorieGoalSaved = false
     @State private var currentCalorieGoal: Int64 = 2000
@@ -193,6 +196,56 @@ struct Homepage: SwiftUI.View {
                         .cornerRadius(12)
                         .padding(.horizontal)
                         .padding(.top, 20)
+
+                        // Health Goals for AI
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: "figure.run")
+                                    .foregroundStyle(Color.mmaize)
+                                Text("Health Goals (AI)")
+                                    .font(.headline)
+                            }
+                            Text("Tell the AI your goals (e.g. \"gain muscle\", \"lose fat\", \"eat more fiber\"). It will personalize suggestions.")
+                                .font(.caption)
+                                .foregroundStyle(Color.gray)
+                            TextEditor(text: $healthGoalsDraft)
+                                .frame(height: 72)
+                                .padding(6)
+                                .background(Color(.systemBackground))
+                                .cornerRadius(8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color(.systemGray4), lineWidth: 1)
+                                )
+                                .font(.callout)
+                            HStack {
+                                Spacer()
+                                Button("Save") {
+                                    healthGoals = healthGoalsDraft
+                                    healthGoalsSaved = true
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) { healthGoalsSaved = false }
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .tint(Color.mBlue)
+                                .disabled(healthGoalsDraft == healthGoals)
+                            }
+                            if healthGoalsSaved {
+                                Text("Goals saved! AI will use these next time.")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.green)
+                            } else if !healthGoals.isEmpty {
+                                Text("Current: \(healthGoals)")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.gray)
+                                    .lineLimit(2)
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                        .padding(.top, 20)
+                        .onAppear { healthGoalsDraft = healthGoals }
 
                         // Anthropic API Key
                         VStack(alignment: .leading, spacing: 8) {
