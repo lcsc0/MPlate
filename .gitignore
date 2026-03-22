@@ -2,7 +2,8 @@
 Pods/
 
 # Xcode
-*.xcworkspace
+# *.xcworkspace is tracked (needed for CocoaPods)
+*.xcworkspace/xcuserdata
 xcuserdata/
 *.moved-aside
 *.pyc
