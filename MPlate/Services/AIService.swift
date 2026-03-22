@@ -63,7 +63,9 @@ class AIService: ObservableObject {
         diningHall: String,
         menuItems: [AIMenuItem],
         alreadyEaten: [String],
-        healthGoals: String
+        healthGoals: String,
+        refusedItems: [String] = [],
+        mealPeriod: String = ""
     ) async {
         guard !apiKey.isEmpty else {
             errorMessage = "Add your Anthropic API key in Settings to enable AI suggestions."
@@ -100,9 +102,15 @@ class AIService: ObservableObject {
             ? "None specified."
             : healthGoals
 
+        let refusedSection = refusedItems.isEmpty
+            ? "None."
+            : refusedItems.joined(separator: "\n")
+
+        let periodLine = mealPeriod.isEmpty ? "General (all-day)" : mealPeriod
+
         let userMessage = """
         Dining hall: \(diningHall)
-
+        Current meal period: \(periodLine)
         User's health goals: \(goalsLine)
 
         Daily targets: \(calorieGoal) cal | \(proteinGoal)g protein | \(fatGoal)g fat | \(carbGoal)g carbs
@@ -110,19 +118,23 @@ class AIService: ObservableObject {
         Already eaten today:
         \(eatenSection)
 
+        Items the user does NOT want suggested:
+        \(refusedSection)
+
         Remaining budget: \(remaining) cal | \(remainingPro)g protein | \(remainingFat)g fat | \(remainingCarb)g carbs (\(pct)% of calorie goal used)
 
-        Available items today (name | serving size | calories | protein | fat | carbs):
+        Available items for this meal period (name | serving size | calories | protein | fat | carbs):
         \(menuList)
 
-        Based on what the user has already eaten and their health goals, recommend 3–5 specific items from the list above that best fill their remaining budget. Avoid re-suggesting meal items (breakfast/lunch/dinner dishes) already logged, but freely suggest staples from the Other section (fruit, condiments, beverages, etc.) even if logged before — users eat these multiple times a day. Include exact portion and brief reason.
+        Based on what the user has already eaten, their health goals, and the current meal period, recommend 3–5 specific items from the list above. Do NOT suggest refused items. Avoid re-suggesting meal dishes already logged, but freely suggest staples (fruit, condiments, beverages, etc.) — users eat these multiple times a day. Include exact portion and brief reason.
         """
 
         let systemPrompt = """
         You are a concise, personalized nutrition coach for a University of Michigan student eating in dining halls.
-        Always consider the user's stated health goals and what they have already eaten today.
+        Always consider the user's health goals, the current meal period, and what they have already eaten today.
         Recommend specific items from the EXACT list provided — do not invent items.
         Use item names EXACTLY as written. Each suggestion must include a concrete portion amount.
+        Never suggest an item the user has refused.
         Respond with valid JSON only:
         {
           "summary": "one sentence tailored to the user's health goals and remaining budget",
