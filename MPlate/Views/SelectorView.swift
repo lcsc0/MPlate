@@ -132,7 +132,17 @@ struct Selector: View {
                                             fat: nutrition.fat ?? "0gm",
                                             cho: nutrition.cho ?? "0gm",
                                             serving: item.itemsize?.serving_size ?? "N/A",
-                                            qty: quantities[selectedItem] ?? "1"
+                                            qty: quantities[selectedItem] ?? "1",
+                                            fiber: nutrition.fiber ?? "0gm",
+                                            sodium: nutrition.sodium ?? "0mg",
+                                            sugar: nutrition.sugar ?? "0gm",
+                                            satFat: nutrition.satFat ?? "0gm",
+                                            cholesterol: nutrition.cholesterol ?? "0mg",
+                                            calcium: nutrition.calcium ?? "0mg",
+                                            iron: nutrition.iron ?? "0mg",
+                                            vitC: nutrition.vitC ?? "0mg",
+                                            vitD: nutrition.vitD ?? "0mcg",
+                                            potassium: nutrition.potassium ?? "0mg"
                                         )
                                     }
                                 }

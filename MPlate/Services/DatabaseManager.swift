@@ -62,6 +62,18 @@ class DatabaseManager {
                 print("customitems3 database is good.")
             }
         }
+
+        // Migrate fooditems: add extended nutrient columns if they don't exist yet
+        let extraColumns: [(String, String)] = [
+            ("fiber", "0gm"), ("sodium", "0mg"), ("sugar", "0gm"),
+            ("sat_fat", "0gm"), ("cholesterol", "0mg"), ("calcium", "0mg"),
+            ("iron", "0mg"), ("vit_c", "0mg"), ("vit_d", "0mcg"), ("potassium", "0mg")
+        ]
+        for (col, def) in extraColumns {
+            try? dbQueue.write { db in
+                try db.execute(sql: "ALTER TABLE fooditems ADD COLUMN \(col) TEXT NOT NULL DEFAULT '\(def)'")
+            }
+        }
     }
 
     // MARK: - Basic writes
@@ -75,11 +87,25 @@ class DatabaseManager {
         }
     }
 
-    static func addFoodItem(meal_id: Int, name: String, kcal: String, pro: String, fat: String, cho: String, serving: String, qty: String) throws {
+    static func addFoodItem(
+        meal_id: Int, name: String,
+        kcal: String, pro: String, fat: String, cho: String,
+        serving: String, qty: String,
+        fiber: String = "0gm", sodium: String = "0mg", sugar: String = "0gm",
+        satFat: String = "0gm", cholesterol: String = "0mg",
+        calcium: String = "0mg", iron: String = "0mg",
+        vitC: String = "0mg", vitD: String = "0mcg", potassium: String = "0mg"
+    ) throws {
         try dbQueue.write { db in
             try db.execute(
-                sql: "INSERT INTO fooditems (meal_id, name, kcal, pro, fat, cho, serving, qty) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                arguments: [meal_id, name, kcal, pro, fat, cho, serving, qty]
+                sql: """
+                INSERT INTO fooditems
+                (meal_id, name, kcal, pro, fat, cho, serving, qty,
+                 fiber, sodium, sugar, sat_fat, cholesterol, calcium, iron, vit_c, vit_d, potassium)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                arguments: [meal_id, name, kcal, pro, fat, cho, serving, qty,
+                            fiber, sodium, sugar, satFat, cholesterol, calcium, iron, vitC, vitD, potassium]
             )
         }
     }
@@ -183,7 +209,17 @@ class DatabaseManager {
                         fat: row["fat"] as! String,
                         cho: row["cho"] as! String,
                         serving: row["serving"] as! String,
-                        qty: row["qty"] as! String
+                        qty: row["qty"] as! String,
+                        fiber: (row["fiber"] as? String) ?? "0gm",
+                        sodium: (row["sodium"] as? String) ?? "0mg",
+                        sugar: (row["sugar"] as? String) ?? "0gm",
+                        satFat: (row["sat_fat"] as? String) ?? "0gm",
+                        cholesterol: (row["cholesterol"] as? String) ?? "0mg",
+                        calcium: (row["calcium"] as? String) ?? "0mg",
+                        iron: (row["iron"] as? String) ?? "0mg",
+                        vitC: (row["vit_c"] as? String) ?? "0mg",
+                        vitD: (row["vit_d"] as? String) ?? "0mcg",
+                        potassium: (row["potassium"] as? String) ?? "0mg"
                     )
                 }
                 completion(foodItems)
@@ -313,7 +349,17 @@ class DatabaseManager {
                         fat: row["fat"],
                         cho: row["cho"],
                         serving: row["serving"],
-                        qty: "1"
+                        qty: "1",
+                        fiber: "0gm",
+                        sodium: "0mg",
+                        sugar: "0gm",
+                        satFat: "0gm",
+                        cholesterol: "0mg",
+                        calcium: "0mg",
+                        iron: "0mg",
+                        vitC: "0mg",
+                        vitD: "0mcg",
+                        potassium: "0mg"
                     )
                 }
             }

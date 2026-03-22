@@ -112,12 +112,32 @@ struct Nutrition: Codable {
     var fat: String?
     var cho: String?
     var kcal: String?
+    var fiber: String?        // tdfb
+    var sodium: String?       // na
+    var sugar: String?        // sugar
+    var satFat: String?       // sfa
+    var cholesterol: String?  // chol
+    var calcium: String?      // ca
+    var iron: String?         // fe
+    var vitC: String?         // vitc
+    var vitD: String?         // vitd
+    var potassium: String?    // k
 
     init(from nutritionDict: [String: String]? = nil) {
         self.pro = nutritionDict?["pro"] ?? "0gm"
         self.fat = nutritionDict?["fat"] ?? "0gm"
         self.cho = nutritionDict?["cho"] ?? "0gm"
         self.kcal = nutritionDict?["kcal"] ?? "0kcal"
+        self.fiber       = nutritionDict?["tdfb"]
+        self.sodium      = nutritionDict?["na"]
+        self.sugar       = nutritionDict?["sugar"]
+        self.satFat      = nutritionDict?["sfa"]
+        self.cholesterol = nutritionDict?["chol"]
+        self.calcium     = nutritionDict?["ca"]
+        self.iron        = nutritionDict?["fe"]
+        self.vitC        = nutritionDict?["vitc"]
+        self.vitD        = nutritionDict?["vitd"]
+        self.potassium   = nutritionDict?["k"]
     }
 }
 

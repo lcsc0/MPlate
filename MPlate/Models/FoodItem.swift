@@ -14,37 +14,51 @@ struct FoodItem: Identifiable {
     let cho: String
     let serving: String
     let qty: String
+    let fiber: String       // "4gm"
+    let sodium: String      // "3mg"
+    let sugar: String       // "0gm"
+    let satFat: String      // "1gm"
+    let cholesterol: String // "0mg"
+    let calcium: String     // "23mg"
+    let iron: String        // "2mg"
+    let vitC: String        // "0mg"
+    let vitD: String        // "0mcg"
+    let potassium: String   // "157mg"
 }
 
 // MARK: - Nutrient calculation
 
+func parseNutrientValue(_ s: String) -> Double {
+    let digits = s.prefix(while: { $0.isNumber || $0 == "." })
+    return Double(digits) ?? 0
+}
+
 extension Array where Element == FoodItem {
     func totalNutrient(key: String) -> Int {
-        var total = 0
+        var total = 0.0
         for item in self {
-            let nutrientValue: String
             let qty = Double(item.qty) ?? 1
-
+            let raw: Double
             switch key {
-            case "kcal":
-                nutrientValue = String(item.kcal.dropLast(4))
-            case "pro":
-                nutrientValue = String(item.pro.dropLast(2))
-            case "fat":
-                nutrientValue = String(item.fat.dropLast(2))
-            case "cho":
-                nutrientValue = String(item.cho.dropLast(2))
-            default:
-                nutrientValue = "0"
+            case "kcal":        raw = parseNutrientValue(item.kcal)
+            case "pro":         raw = parseNutrientValue(item.pro)
+            case "fat":         raw = parseNutrientValue(item.fat)
+            case "cho":         raw = parseNutrientValue(item.cho)
+            case "fiber":       raw = parseNutrientValue(item.fiber)
+            case "sodium":      raw = parseNutrientValue(item.sodium)
+            case "sugar":       raw = parseNutrientValue(item.sugar)
+            case "satFat":      raw = parseNutrientValue(item.satFat)
+            case "cholesterol": raw = parseNutrientValue(item.cholesterol)
+            case "calcium":     raw = parseNutrientValue(item.calcium)
+            case "iron":        raw = parseNutrientValue(item.iron)
+            case "vitC":        raw = parseNutrientValue(item.vitC)
+            case "vitD":        raw = parseNutrientValue(item.vitD)
+            case "potassium":   raw = parseNutrientValue(item.potassium)
+            default:            raw = 0
             }
-
-            if let nutrientDoubValue = Double(nutrientValue.trimmingCharacters(in: .whitespaces)) {
-                total += Int(nutrientDoubValue * qty)
-            } else {
-                print("Invalid \(key) value: \(nutrientValue)")
-            }
+            total += raw * qty
         }
-        return total
+        return Int(total)
     }
 }
 
