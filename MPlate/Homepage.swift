@@ -104,7 +104,7 @@ struct Homepage: SwiftUI.View {
                                 .font(.caption)
                                 .foregroundStyle(Color.gray)
                             HStack {
-                                SecureField(anthropicApiKey.isEmpty ? "sk-ant-..." : "Key saved ✓", text: $apiKeyInput)
+                                TextField(anthropicApiKey.isEmpty ? "sk-ant-..." : "Key saved ✓", text: $apiKeyInput)
                                     .textFieldStyle(.roundedBorder)
                                     .autocorrectionDisabled()
                                     .textInputAutocapitalization(.never)
