@@ -59,14 +59,12 @@ class FoodSearchService: ObservableObject {
                 let response = try JSONDecoder().decode(USDASearchResponse.self, from: data)
 
                 let mapped: [FoodSearchResult] = response.foods.compactMap { food in
-                    // Build a nutrientId → value map
                     var nutrientMap: [Int: Double] = [:]
                     for n in food.foodNutrients {
                         if let nid = n.nutrientId, let val = n.value {
                             nutrientMap[nid] = val
                         }
                     }
-                    // Nutrient IDs: 1008 = kcal, 1003 = protein, 1004 = fat, 1005 = carbs
                     let cal  = Int(nutrientMap[1008] ?? 0)
                     let pro  = Int(nutrientMap[1003] ?? 0)
                     let fat  = Int(nutrientMap[1004] ?? 0)
