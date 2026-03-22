@@ -16,6 +16,28 @@ struct Tracker: SwiftUI.View {
     @State private var totalFat: Int = 0
     @State private var totalCarbs: Int = 0
     @State private var CalorieGoal: Int64 = 2000
+    @AppStorage("goalProtein") private var goalProtein: Int = 150
+    @AppStorage("goalFat") private var goalFat: Int = 65
+    @AppStorage("goalCarbs") private var goalCarbs: Int = 250
+    @AppStorage("goalFiber") private var goalFiber: Int = 25
+    @AppStorage("goalSodium") private var goalSodium: Int = 2300
+    @AppStorage("goalSugar") private var goalSugar: Int = 50
+    @AppStorage("goalCalcium") private var goalCalcium: Int = 1300
+    @AppStorage("goalIron") private var goalIron: Int = 18
+    @AppStorage("goalVitC") private var goalVitC: Int = 90
+    @AppStorage("goalVitD") private var goalVitD: Int = 20
+    @AppStorage("goalPotassium") private var goalPotassium: Int = 4700
+    @State private var nutrientsExpanded: Bool = false
+    @State private var totalFiber: Int = 0
+    @State private var totalSodium: Int = 0
+    @State private var totalSugar: Int = 0
+    @State private var totalSatFat: Int = 0
+    @State private var totalCholesterol: Int = 0
+    @State private var totalCalcium: Int = 0
+    @State private var totalIron: Int = 0
+    @State private var totalVitC: Int = 0
+    @State private var totalVitD: Int = 0
+    @State private var totalPotassium: Int = 0
 
     @AppStorage("selectedDiningHall") private var selectedDiningHall: String = "Mosher Jordan Dining Hall"
     @State private var showHallPickerSheet = false
@@ -50,6 +72,16 @@ struct Tracker: SwiftUI.View {
         totalProtein = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "pro")
         totalFat = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "fat")
         totalCarbs = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "cho")
+        totalFiber       = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "fiber")
+        totalSodium      = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "sodium")
+        totalSugar       = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "sugar")
+        totalSatFat      = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "satFat")
+        totalCholesterol = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "cholesterol")
+        totalCalcium     = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "calcium")
+        totalIron        = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "iron")
+        totalVitC        = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "vitC")
+        totalVitD        = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "vitD")
+        totalPotassium   = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "potassium")
     }
 
     private func deleteItem(item: FoodItem) {
@@ -118,6 +150,48 @@ struct Tracker: SwiftUI.View {
                     .progressViewStyle(LinearProgressViewStyle())
                     .frame(width: 400)
                     .padding(6)
+
+                // Extended nutrients card
+                VStack(spacing: 0) {
+                    Button(action: { withAnimation { nutrientsExpanded.toggle() } }) {
+                        HStack {
+                            Image(systemName: "flask.fill")
+                                .foregroundStyle(Color.mBlue)
+                                .font(.caption)
+                            Text("Nutrients")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Image(systemName: nutrientsExpanded ? "chevron.up" : "chevron.down")
+                                .font(.caption2)
+                                .foregroundStyle(Color.gray)
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                    }
+                    .buttonStyle(.plain)
+
+                    if nutrientsExpanded {
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
+                            NutrientProgressRow(label: "Fiber", value: totalFiber, goal: goalFiber, unit: "g")
+                            NutrientProgressRow(label: "Sodium", value: totalSodium, goal: goalSodium, unit: "mg")
+                            NutrientProgressRow(label: "Sugar", value: totalSugar, goal: goalSugar, unit: "g")
+                            NutrientProgressRow(label: "Sat Fat", value: totalSatFat, goal: goalFat, unit: "g")
+                            NutrientProgressRow(label: "Calcium", value: totalCalcium, goal: goalCalcium, unit: "mg")
+                            NutrientProgressRow(label: "Iron", value: totalIron, goal: goalIron, unit: "mg")
+                            NutrientProgressRow(label: "Vit C", value: totalVitC, goal: goalVitC, unit: "mg")
+                            NutrientProgressRow(label: "Vit D", value: totalVitD, goal: goalVitD, unit: "mcg")
+                            NutrientProgressRow(label: "Potassium", value: totalPotassium, goal: goalPotassium, unit: "mg")
+                            NutrientProgressRow(label: "Cholesterol", value: totalCholesterol, goal: 300, unit: "mg")
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 8)
+                    }
+                }
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+                .padding(.horizontal, 18)
+                .padding(.bottom, 4)
 
                 // Dining hall banner
                 HStack {
@@ -449,5 +523,45 @@ struct Tracker: SwiftUI.View {
             }
             Spacer()
         }
+    }
+}
+
+private struct NutrientProgressRow: View {
+    let label: String
+    let value: Int
+    let goal: Int
+    let unit: String
+
+    private var fraction: Double {
+        guard goal > 0 else { return 0 }
+        return min(1.0, Double(value) / Double(goal))
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            HStack {
+                Text(label)
+                    .font(.caption2)
+                    .foregroundStyle(Color.secondary)
+                Spacer()
+                Text("\(value)/\(goal)\(unit)")
+                    .font(.caption2)
+                    .foregroundStyle(Color.primary)
+            }
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color(.systemGray4))
+                        .frame(height: 5)
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(fraction >= 1.0 ? Color.green : Color.mBlue)
+                        .frame(width: geo.size.width * fraction, height: 5)
+                }
+            }
+            .frame(height: 5)
+        }
+        .padding(8)
+        .background(Color(.systemBackground))
+        .cornerRadius(8)
     }
 }

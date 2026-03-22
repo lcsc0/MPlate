@@ -15,6 +15,18 @@ struct Homepage: SwiftUI.View {
     @State private var calorieGoalInput: String = ""
     @State private var calorieGoalSaved = false
     @State private var currentCalorieGoal: Int64 = 2000
+    @AppStorage("goalProtein") private var goalProtein: Int = 150
+    @AppStorage("goalFat") private var goalFat: Int = 65
+    @AppStorage("goalCarbs") private var goalCarbs: Int = 250
+    @AppStorage("goalFiber") private var goalFiber: Int = 25
+    @AppStorage("goalSodium") private var goalSodium: Int = 2300
+    @AppStorage("goalSugar") private var goalSugar: Int = 50
+    @AppStorage("goalCalcium") private var goalCalcium: Int = 1300
+    @AppStorage("goalIron") private var goalIron: Int = 18
+    @AppStorage("goalVitC") private var goalVitC: Int = 90
+    @AppStorage("goalVitD") private var goalVitD: Int = 20
+    @AppStorage("goalPotassium") private var goalPotassium: Int = 4700
+    @State private var showGoalsEditor: Bool = false
 
     var body: some SwiftUI.View {
         NavigationStack {
@@ -89,6 +101,52 @@ struct Homepage: SwiftUI.View {
                         .onAppear {
                             currentCalorieGoal = DatabaseManager.getCurrentCalorieGoal()
                         }
+
+                        // Health Goals
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: "chart.bar.fill")
+                                    .foregroundStyle(Color.mBlue)
+                                Text("Daily Nutrient Goals")
+                                    .font(.headline)
+                                Spacer()
+                                Button(showGoalsEditor ? "Done" : "Edit") {
+                                    showGoalsEditor.toggle()
+                                }
+                                .font(.caption)
+                                .foregroundStyle(Color.mBlue)
+                            }
+                            if showGoalsEditor {
+                                VStack(spacing: 6) {
+                                    GoalRow(label: "Protein (g)", value: $goalProtein)
+                                    GoalRow(label: "Fat (g)", value: $goalFat)
+                                    GoalRow(label: "Carbs (g)", value: $goalCarbs)
+                                    GoalRow(label: "Fiber (g)", value: $goalFiber)
+                                    GoalRow(label: "Sodium (mg)", value: $goalSodium)
+                                    GoalRow(label: "Sugar (g)", value: $goalSugar)
+                                    GoalRow(label: "Calcium (mg)", value: $goalCalcium)
+                                    GoalRow(label: "Iron (mg)", value: $goalIron)
+                                    GoalRow(label: "Vitamin C (mg)", value: $goalVitC)
+                                    GoalRow(label: "Vitamin D (mcg)", value: $goalVitD)
+                                    GoalRow(label: "Potassium (mg)", value: $goalPotassium)
+                                }
+                            } else {
+                                // summary chips
+                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
+                                    GoalChip(label: "Protein", value: goalProtein, unit: "g")
+                                    GoalChip(label: "Fat", value: goalFat, unit: "g")
+                                    GoalChip(label: "Carbs", value: goalCarbs, unit: "g")
+                                    GoalChip(label: "Fiber", value: goalFiber, unit: "g")
+                                    GoalChip(label: "Sodium", value: goalSodium, unit: "mg")
+                                    GoalChip(label: "Sugar", value: goalSugar, unit: "g")
+                                }
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                        .padding(.top, 20)
 
                         // Calorie Calculator
                         NavigationLink(destination: Setup()) {
@@ -219,6 +277,45 @@ struct Homepage: SwiftUI.View {
         .navigationBarBackButtonHidden()
         .preferredColorScheme(darkMode ? .dark : nil)
         .hideKeyboardOnTap()
+    }
+}
+
+private struct GoalRow: View {
+    let label: String
+    @Binding var value: Int
+    @State private var text: String = ""
+
+    var body: some View {
+        HStack {
+            Text(label)
+                .font(.caption)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            TextField("", text: $text)
+                .keyboardType(.numberPad)
+                .textFieldStyle(.roundedBorder)
+                .frame(width: 80)
+                .multilineTextAlignment(.trailing)
+                .onChange(of: text) { _, new in
+                    if let v = Int(new) { value = v }
+                }
+        }
+        .onAppear { text = "\(value)" }
+    }
+}
+
+private struct GoalChip: View {
+    let label: String
+    let value: Int
+    let unit: String
+    var body: some View {
+        VStack(spacing: 1) {
+            Text(label).font(.caption2).foregroundStyle(Color.gray)
+            Text("\(value)\(unit)").font(.caption).fontWeight(.semibold).foregroundStyle(Color.mBlue)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 4)
+        .background(Color(.systemBackground))
+        .cornerRadius(8)
     }
 }
 
