@@ -206,7 +206,8 @@ struct Tracker: SwiftUI.View {
                         Spacer()
                         Button {
                             Task {
-                                let allEaten = (breakfastItems + lunchItems + dinnerItems + otherItems).map {
+                                // Only exclude meal items (B/L/D) from re-suggestion; "Other" staples (fruit, condiments, etc.) are fair game
+                                let allEaten = (breakfastItems + lunchItems + dinnerItems).map {
                                     let qty = Double($0.qty) ?? 1
                                     let cal = Int(parseNutrientValue($0.kcal) * qty)
                                     return "\($0.name) (qty \($0.qty)) — \(cal) cal"

@@ -115,7 +115,7 @@ class AIService: ObservableObject {
         Available items today (name | serving size | calories | protein | fat | carbs):
         \(menuList)
 
-        Based on what the user has already eaten and their health goals, recommend 3–5 specific items from the list above that best fill their remaining budget. Avoid suggesting items they already logged. Include exact portion and brief reason.
+        Based on what the user has already eaten and their health goals, recommend 3–5 specific items from the list above that best fill their remaining budget. Avoid re-suggesting meal items (breakfast/lunch/dinner dishes) already logged, but freely suggest staples from the Other section (fruit, condiments, beverages, etc.) even if logged before — users eat these multiple times a day. Include exact portion and brief reason.
         """
 
         let systemPrompt = """
