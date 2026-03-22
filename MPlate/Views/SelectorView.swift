@@ -31,6 +31,8 @@ struct Selector: View {
     @State private var customExpanded: Bool = true
     @State private var otherMenu: Menu?
     @State private var otherExpanded: Bool = true
+    @State private var otherCourses: [Meal.CourseWrapper.Course] = []
+    @State private var showReorderSheet = false
 
     // @AppStorage handles persistence automatically
     private func updateSelectedDiningHallCache() {}
@@ -67,6 +69,32 @@ struct Selector: View {
             }
         }
         otherMenu = MenuService.loadOtherMenu(diningHall: selectedDiningHall)
+        loadOtherCourses()
+    }
+
+    private func loadOtherCourses() {
+        guard let meals = otherMenu?.meal,
+              let meal = meals.first(where: { $0.name?.lowercased() == "other" }),
+              let courses = meal.course?.courseitem else {
+            otherCourses = []
+            return
+        }
+        let key = "otherCourseOrder_\(selectedDiningHall)"
+        let savedOrder = UserDefaults.standard.stringArray(forKey: key) ?? []
+        if savedOrder.isEmpty {
+            otherCourses = courses
+        } else {
+            let dict = Dictionary(uniqueKeysWithValues: courses.compactMap { c in c.name.map { ($0, c) } })
+            var ordered = savedOrder.compactMap { dict[$0] }
+            let orderedSet = Set(savedOrder)
+            ordered += courses.filter { !orderedSet.contains($0.name ?? "") }
+            otherCourses = ordered
+        }
+    }
+
+    private func saveOtherCourseOrder() {
+        let key = "otherCourseOrder_\(selectedDiningHall)"
+        UserDefaults.standard.set(otherCourses.compactMap { $0.name }, forKey: key)
     }
 
     private func loadBudget() {
@@ -143,6 +171,7 @@ struct Selector: View {
                         .onChange(of: selectedDiningHall) { oldValue, newValue in
                             hallChanging = true
                             noMenuItems = true
+                            otherCourses = []
                             updateSelectedDiningHallCache()
                             preLoaded = false
                             fetchData()
@@ -286,94 +315,103 @@ struct Selector: View {
                             }
 
                             // Other menu items (non-daily: condiments, beverages, etc.)
-                            if mealAddingTo.lowercased() == "other", let otherMeals = otherMenu?.meal {
-                                ForEach(otherMeals.filter { $0.name?.lowercased() == "other" }, id: \.name) { meal in
-                                    if let courses = meal.course?.courseitem {
-                                        ForEach(courses, id: \.name) { course in
-                                            let courseName = course.name ?? "Unnamed Course"
-                                            Button(action: {
-                                                withAnimation {
-                                                    if expandedOtherCourses.contains(courseName) {
-                                                        expandedOtherCourses.remove(courseName)
-                                                    } else {
-                                                        expandedOtherCourses.insert(courseName)
-                                                    }
-                                                }
-                                            }) {
-                                                HStack {
-                                                    Text(courseName)
-                                                        .font(.title2)
-                                                        .bold()
-                                                        .foregroundStyle(Color.white)
-                                                    Spacer()
-                                                    Image(systemName: expandedOtherCourses.contains(courseName) ? "chevron.up" : "chevron.down")
-                                                        .foregroundStyle(Color.white)
-                                                        .font(.title3)
-                                                        .padding(.trailing, 8)
-                                                }
-                                                .frame(width: 340, height: 50)
-                                                .padding(.horizontal)
-                                                .background(Color(.mBlue))
-                                                .cornerRadius(13)
-                                                .padding(.bottom, 4)
-                                            }
-                                            .buttonStyle(.plain)
-                                            .onAppear { noMenuItems = false }
-
+                            if mealAddingTo.lowercased() == "other" && !otherCourses.isEmpty {
+                                HStack {
+                                    Spacer()
+                                    Button(action: { showReorderSheet = true }) {
+                                        HStack(spacing: 4) {
+                                            Image(systemName: "line.3.horizontal")
+                                            Text("Reorder")
+                                                .font(.caption)
+                                        }
+                                        .foregroundStyle(Color.mBlue)
+                                    }
+                                    .padding(.trailing, 18)
+                                    .padding(.bottom, 4)
+                                }
+                                ForEach(otherCourses, id: \.name) { course in
+                                    let courseName = course.name ?? "Unnamed Course"
+                                    Button(action: {
+                                        withAnimation {
                                             if expandedOtherCourses.contains(courseName) {
-                                                VStack {
-                                                    ForEach(course.menuitem.item, id: \.name) { menuItem in
-                                                        VStack {
-                                                            HStack {
-                                                                Text(menuItem.name ?? "Unnamed MenuItem")
-                                                                    .font(.system(size: 14))
-                                                                    .padding(.leading, 15)
-                                                                    .fontWeight(.semibold)
-                                                                NavigationLink(destination: NutritionViewer(name: menuItem.name ?? "Unnamed MenuItem", kcal: menuItem.itemsize?.nutrition?.kcal ?? "0kcal", pro: menuItem.itemsize?.nutrition?.pro ?? "0gm", fat: menuItem.itemsize?.nutrition?.fat ?? "0gm", cho: menuItem.itemsize?.nutrition?.cho ?? "0gm", serving: menuItem.itemsize?.serving_size ?? "N/A")) {
-                                                                    Image(systemName: "info.circle")
-                                                                        .resizable()
-                                                                        .frame(width: 17, height: 17)
-                                                                }
-                                                                Spacer()
-                                                                let key = menuItem.name ?? ""
-                                                                if selectedItems.contains(key) {
-                                                                    TextField("qty", text: Binding(
-                                                                        get: { quantities[key] ?? "1" },
-                                                                        set: { quantities[key] = $0 }
-                                                                    ))
-                                                                    .keyboardType(.decimalPad)
-                                                                    .frame(width: 44)
-                                                                    .multilineTextAlignment(.center)
-                                                                    .textFieldStyle(.roundedBorder)
-                                                                }
-                                                                Toggle(isOn: Binding(
-                                                                    get: { selectedItems.contains(key) },
-                                                                    set: { isSelected in
-                                                                        if isSelected {
-                                                                            selectedItems.insert(key)
-                                                                            quantities[key] = "1"
-                                                                        } else {
-                                                                            selectedItems.remove(key)
-                                                                        }
-                                                                    }
-                                                                )) {
-                                                                    Image(systemName: selectedItems.contains(key) ? "checkmark.square.fill" : "square")
-                                                                        .foregroundStyle(Color.mBlue)
-                                                                        .animation(nil, value: selectedItems)
-                                                                        .font(.title)
-                                                                }
-                                                                .sensoryFeedback(.increase, trigger: selectedItems)
-                                                                .labelsHidden()
-                                                                .toggleStyle(.button)
-                                                                .padding(.trailing, 15)
-                                                                .buttonStyle(.plain)
-                                                            }
-                                                            Divider()
-                                                        }
-                                                    }
-                                                }.padding(.bottom, 8)
+                                                expandedOtherCourses.remove(courseName)
+                                            } else {
+                                                expandedOtherCourses.insert(courseName)
                                             }
                                         }
+                                    }) {
+                                        HStack {
+                                            Text(courseName)
+                                                .font(.title2)
+                                                .bold()
+                                                .foregroundStyle(Color.white)
+                                            Spacer()
+                                            Image(systemName: expandedOtherCourses.contains(courseName) ? "chevron.up" : "chevron.down")
+                                                .foregroundStyle(Color.white)
+                                                .font(.title3)
+                                                .padding(.trailing, 8)
+                                        }
+                                        .frame(width: 340, height: 50)
+                                        .padding(.horizontal)
+                                        .background(Color(.mBlue))
+                                        .cornerRadius(13)
+                                        .padding(.bottom, 4)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .onAppear { noMenuItems = false }
+
+                                    if expandedOtherCourses.contains(courseName) {
+                                        VStack {
+                                            ForEach(course.menuitem.item, id: \.name) { menuItem in
+                                                VStack {
+                                                    HStack {
+                                                        Text(menuItem.name ?? "Unnamed MenuItem")
+                                                            .font(.system(size: 14))
+                                                            .padding(.leading, 15)
+                                                            .fontWeight(.semibold)
+                                                        NavigationLink(destination: NutritionViewer(name: menuItem.name ?? "Unnamed MenuItem", kcal: menuItem.itemsize?.nutrition?.kcal ?? "0kcal", pro: menuItem.itemsize?.nutrition?.pro ?? "0gm", fat: menuItem.itemsize?.nutrition?.fat ?? "0gm", cho: menuItem.itemsize?.nutrition?.cho ?? "0gm", serving: menuItem.itemsize?.serving_size ?? "N/A")) {
+                                                            Image(systemName: "info.circle")
+                                                                .resizable()
+                                                                .frame(width: 17, height: 17)
+                                                        }
+                                                        Spacer()
+                                                        let key = menuItem.name ?? ""
+                                                        if selectedItems.contains(key) {
+                                                            TextField("qty", text: Binding(
+                                                                get: { quantities[key] ?? "1" },
+                                                                set: { quantities[key] = $0 }
+                                                            ))
+                                                            .keyboardType(.decimalPad)
+                                                            .frame(width: 44)
+                                                            .multilineTextAlignment(.center)
+                                                            .textFieldStyle(.roundedBorder)
+                                                        }
+                                                        Toggle(isOn: Binding(
+                                                            get: { selectedItems.contains(key) },
+                                                            set: { isSelected in
+                                                                if isSelected {
+                                                                    selectedItems.insert(key)
+                                                                    quantities[key] = "1"
+                                                                } else {
+                                                                    selectedItems.remove(key)
+                                                                }
+                                                            }
+                                                        )) {
+                                                            Image(systemName: selectedItems.contains(key) ? "checkmark.square.fill" : "square")
+                                                                .foregroundStyle(Color.mBlue)
+                                                                .animation(nil, value: selectedItems)
+                                                                .font(.title)
+                                                        }
+                                                        .sensoryFeedback(.increase, trigger: selectedItems)
+                                                        .labelsHidden()
+                                                        .toggleStyle(.button)
+                                                        .padding(.trailing, 15)
+                                                        .buttonStyle(.plain)
+                                                    }
+                                                    Divider()
+                                                }
+                                            }
+                                        }.padding(.bottom, 8)
                                     }
                                 }
                             }
@@ -507,6 +545,30 @@ struct Selector: View {
         .sheet(isPresented: $showAISheet) {
             AIRecommendationsSheet(aiService: aiService, diningHall: selectedDiningHall)
                 .presentationDetents([.medium, .large])
+        }
+        .sheet(isPresented: $showReorderSheet) {
+            NavigationStack {
+                List {
+                    ForEach(otherCourses, id: \.name) { course in
+                        Text(course.name ?? "Unnamed")
+                            .font(.body)
+                    }
+                    .onMove { from, to in
+                        otherCourses.move(fromOffsets: from, toOffset: to)
+                        saveOtherCourseOrder()
+                    }
+                }
+                .environment(\.editMode, .constant(.active))
+                .navigationTitle("Reorder Categories")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") { showReorderSheet = false }
+                            .fontWeight(.semibold)
+                    }
+                }
+            }
+            .presentationDetents([.medium, .large])
         }
     }
 }
