@@ -175,9 +175,11 @@ class AIService: ObservableObject {
         request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
         request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
 
+        request.timeoutInterval = 30
+
         let body: [String: Any] = [
-            "model": "claude-3-5-haiku-20241022",
-            "max_tokens": 600,
+            "model": "claude-haiku-4-5-20251001",
+            "max_tokens": 1024,
             "system": system,
             "messages": [["role": "user", "content": user]]
         ]
