@@ -1,0 +1,1634 @@
+{
+  "menu": {
+    "meal": [
+      {
+        "name": "OTHER",
+        "course": [
+          {
+            "name": "Accompaniments",
+            "menuitem": [
+              {
+                "name": "Nutella with Hazelnuts",
+                "itemsize": {
+                  "serving_size": "Ounce\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "150kcal",
+                    "pro": "1gm",
+                    "fat": "8gm",
+                    "cho": "17gm"
+                  }
+                }
+              },
+              {
+                "name": "Whipped Margarine",
+                "itemsize": {
+                  "serving_size": "Tablespoon\u00a0(9g)",
+                  "nutrition": {
+                    "kcal": "70kcal",
+                    "pro": "0gm",
+                    "fat": "7gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Whipped Light Cream Cheese",
+                "itemsize": {
+                  "serving_size": "Tablespoon\u00a0(14g)",
+                  "nutrition": {
+                    "kcal": "35kcal",
+                    "pro": "0gm",
+                    "fat": "3gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Strawberry Cream Cheese",
+                "itemsize": {
+                  "serving_size": "Tablespoon\u00a0(14g)",
+                  "nutrition": {
+                    "kcal": "40kcal",
+                    "pro": "0gm",
+                    "fat": "4gm",
+                    "cho": "1gm"
+                  }
+                }
+              },
+              {
+                "name": "Whipped Butter",
+                "itemsize": {
+                  "serving_size": "Tablespoon\u00a0(14g)",
+                  "nutrition": {
+                    "kcal": "100kcal",
+                    "pro": "0gm",
+                    "fat": "11gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Cinnamon Sugar Topping",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "110kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "27gm"
+                  }
+                }
+              },
+              {
+                "name": "Creamy Peanut Butter",
+                "itemsize": {
+                  "serving_size": "2 Tablespoons\u00a0(32g)",
+                  "nutrition": {
+                    "kcal": "190kcal",
+                    "pro": "7gm",
+                    "fat": "16gm",
+                    "cho": "6gm"
+                  }
+                }
+              },
+              {
+                "name": "Dill Pickle Chips",
+                "itemsize": {
+                  "serving_size": "7 Chips\u00a0(56g)",
+                  "nutrition": {
+                    "kcal": "10kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "2gm"
+                  }
+                }
+              },
+              {
+                "name": "Shredded Iceberg Lettuce",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "5kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Sliced Tomatoes",
+                "itemsize": {
+                  "serving_size": "Slice\u00a0(42g)",
+                  "nutrition": {
+                    "kcal": "10kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "2gm"
+                  }
+                }
+              },
+              {
+                "name": "Half & Half",
+                "itemsize": {
+                  "serving_size": "Ounce\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "35kcal",
+                    "pro": "0gm",
+                    "fat": "3gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Coffee Mate French Vanilla Creamer",
+                "itemsize": {
+                  "serving_size": "Tablespoon\u00a0(15g)",
+                  "nutrition": {
+                    "kcal": "70kcal",
+                    "pro": "0gm",
+                    "fat": "4.5gm",
+                    "cho": "9gm"
+                  }
+                }
+              },
+              {
+                "name": "Whipped Topping",
+                "itemsize": {
+                  "serving_size": "2 Tablespoons\u00a0(7g)",
+                  "nutrition": {
+                    "kcal": "20kcal",
+                    "pro": "0gm",
+                    "fat": "2gm",
+                    "cho": "2gm"
+                  }
+                }
+              },
+              {
+                "name": "Sugar",
+                "itemsize": {
+                  "serving_size": "Teaspoon\u00a0(4g)",
+                  "nutrition": {
+                    "kcal": "15kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "4gm"
+                  }
+                }
+              },
+              {
+                "name": "Honey",
+                "itemsize": {
+                  "serving_size": "Teaspoon\u00a0(7g)",
+                  "nutrition": {
+                    "kcal": "20kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "6gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Bagels",
+            "menuitem": [
+              {
+                "name": "Asiago Cheese Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "250kcal",
+                    "pro": "12gm",
+                    "fat": "3.5gm",
+                    "cho": "42gm"
+                  }
+                }
+              },
+              {
+                "name": "Blueberry Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "220kcal",
+                    "pro": "8gm",
+                    "fat": "1gm",
+                    "cho": "46gm"
+                  }
+                }
+              },
+              {
+                "name": "Jalapeno Cheddar Bagel",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(106g)",
+                  "nutrition": {
+                    "kcal": "270kcal",
+                    "pro": "11gm",
+                    "fat": "1.5gm",
+                    "cho": "54gm"
+                  }
+                }
+              },
+              {
+                "name": "Chocolate Chip Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "250kcal",
+                    "pro": "8gm",
+                    "fat": "2.5gm",
+                    "cho": "48gm"
+                  }
+                }
+              },
+              {
+                "name": "Poppyseed Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "220kcal",
+                    "pro": "8gm",
+                    "fat": "1gm",
+                    "cho": "46gm"
+                  }
+                }
+              },
+              {
+                "name": "Everything Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "230kcal",
+                    "pro": "9gm",
+                    "fat": "1gm",
+                    "cho": "46gm"
+                  }
+                }
+              },
+              {
+                "name": "Garlic Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "230kcal",
+                    "pro": "9gm",
+                    "fat": "1gm",
+                    "cho": "46gm"
+                  }
+                }
+              },
+              {
+                "name": "Honey Wheat Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "230kcal",
+                    "pro": "9gm",
+                    "fat": "1gm",
+                    "cho": "47gm"
+                  }
+                }
+              },
+              {
+                "name": "Onion Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "230kcal",
+                    "pro": "9gm",
+                    "fat": "1gm",
+                    "cho": "46gm"
+                  }
+                }
+              },
+              {
+                "name": "Plain Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "220kcal",
+                    "pro": "9gm",
+                    "fat": "1gm",
+                    "cho": "46gm"
+                  }
+                }
+              },
+              {
+                "name": "Pumpernickel Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "220kcal",
+                    "pro": "9gm",
+                    "fat": "1gm",
+                    "cho": "46gm"
+                  }
+                }
+              },
+              {
+                "name": "Raisin Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "230kcal",
+                    "pro": "8gm",
+                    "fat": "1gm",
+                    "cho": "47gm"
+                  }
+                }
+              },
+              {
+                "name": "Salt Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "220kcal",
+                    "pro": "9gm",
+                    "fat": "1gm",
+                    "cho": "46gm"
+                  }
+                }
+              },
+              {
+                "name": "Sesame Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "230kcal",
+                    "pro": "9gm",
+                    "fat": "2gm",
+                    "cho": "46gm"
+                  }
+                }
+              },
+              {
+                "name": "Spinach Feta Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "210kcal",
+                    "pro": "8gm",
+                    "fat": "2.5gm",
+                    "cho": "40gm"
+                  }
+                }
+              },
+              {
+                "name": "Vanilla Cinnamon Bagel",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "250kcal",
+                    "pro": "8gm",
+                    "fat": "2.5gm",
+                    "cho": "49gm"
+                  }
+                }
+              },
+              {
+                "name": "Cranberry Bagels",
+                "itemsize": {
+                  "serving_size": "Bagel\u00a0(94g)",
+                  "nutrition": {
+                    "kcal": "230kcal",
+                    "pro": "8gm",
+                    "fat": "1gm",
+                    "cho": "48gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Breads and Rolls",
+            "menuitem": [
+              {
+                "name": "100% Whole Wheat Multigrain",
+                "itemsize": {
+                  "serving_size": "Slice\u00a0(45g)",
+                  "nutrition": {
+                    "kcal": "120kcal",
+                    "pro": "5gm",
+                    "fat": "1gm",
+                    "cho": "22gm"
+                  }
+                }
+              },
+              {
+                "name": "Cinnamon Raisin Bread",
+                "itemsize": {
+                  "serving_size": "Slice\u00a0(26g)",
+                  "nutrition": {
+                    "kcal": "70kcal",
+                    "pro": "2gm",
+                    "fat": "0.5gm",
+                    "cho": "13gm"
+                  }
+                }
+              },
+              {
+                "name": "Wheat Lavash",
+                "itemsize": {
+                  "serving_size": "Lavash\u00a0(57g)",
+                  "nutrition": {
+                    "kcal": "170kcal",
+                    "pro": "4gm",
+                    "fat": "5gm",
+                    "cho": "27gm"
+                  }
+                }
+              },
+              {
+                "name": "Split Top Wheat Bread",
+                "itemsize": {
+                  "serving_size": "Slice\u00a0(27g)",
+                  "nutrition": {
+                    "kcal": "60kcal",
+                    "pro": "2gm",
+                    "fat": "1gm",
+                    "cho": "12gm"
+                  }
+                }
+              },
+              {
+                "name": "White Split Top Bread",
+                "itemsize": {
+                  "serving_size": "Slice\u00a0(26g)",
+                  "nutrition": {
+                    "kcal": "70kcal",
+                    "pro": "2gm",
+                    "fat": "1gm",
+                    "cho": "11gm"
+                  }
+                }
+              },
+              {
+                "name": "Deli Rye Bread",
+                "itemsize": {
+                  "serving_size": "Slice\u00a0(40g)",
+                  "nutrition": {
+                    "kcal": "100kcal",
+                    "pro": "3gm",
+                    "fat": "1gm",
+                    "cho": "18gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Cereals",
+            "menuitem": [
+              {
+                "name": "Kashi Go Lean Crunch",
+                "itemsize": {
+                  "serving_size": "Cups\u00a0(50g)",
+                  "nutrition": {
+                    "kcal": "180kcal",
+                    "pro": "8gm",
+                    "fat": "3gm",
+                    "cho": "35gm"
+                  }
+                }
+              },
+              {
+                "name": "Rice Chex",
+                "itemsize": {
+                  "serving_size": "Cups\u00a0(29g)",
+                  "nutrition": {
+                    "kcal": "110kcal",
+                    "pro": "2gm",
+                    "fat": "0.5gm",
+                    "cho": "25gm"
+                  }
+                }
+              },
+              {
+                "name": "Honey Nut (Almond) Cheerios",
+                "itemsize": {
+                  "serving_size": "Cups\u00a0(37g)",
+                  "nutrition": {
+                    "kcal": "160kcal",
+                    "pro": "2gm",
+                    "fat": "5gm",
+                    "cho": "26gm"
+                  }
+                }
+              },
+              {
+                "name": "Cinnamon Toast Crunch",
+                "itemsize": {
+                  "serving_size": "Cups\u00a0(40g)",
+                  "nutrition": {
+                    "kcal": "160kcal",
+                    "pro": "2gm",
+                    "fat": "4gm",
+                    "cho": "32gm"
+                  }
+                }
+              },
+              {
+                "name": "Special K with Berries",
+                "itemsize": {
+                  "serving_size": "Cups\u00a0(29g)",
+                  "nutrition": {
+                    "kcal": "100kcal",
+                    "pro": "2gm",
+                    "fat": "0gm",
+                    "cho": "25gm"
+                  }
+                }
+              },
+              {
+                "name": "Cocoa Puffs Cereal",
+                "itemsize": {
+                  "serving_size": "Cups\u00a0(36g)",
+                  "nutrition": {
+                    "kcal": "140kcal",
+                    "pro": "2gm",
+                    "fat": "2gm",
+                    "cho": "31gm"
+                  }
+                }
+              },
+              {
+                "name": "Lucky Charms",
+                "itemsize": {
+                  "serving_size": "Cups\u00a0(36g)",
+                  "nutrition": {
+                    "kcal": "140kcal",
+                    "pro": "3gm",
+                    "fat": "1.5gm",
+                    "cho": "30gm"
+                  }
+                }
+              },
+              {
+                "name": "Froot Loops Cereal",
+                "itemsize": {
+                  "serving_size": "Cups\u00a0(31g)",
+                  "nutrition": {
+                    "kcal": "120kcal",
+                    "pro": "2gm",
+                    "fat": "1gm",
+                    "cho": "27gm"
+                  }
+                }
+              },
+              {
+                "name": "Corn Flakes Cereal",
+                "itemsize": {
+                  "serving_size": "Cups\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "100kcal",
+                    "pro": "2gm",
+                    "fat": "0gm",
+                    "cho": "24gm"
+                  }
+                }
+              },
+              {
+                "name": "Captain Crunch",
+                "itemsize": {
+                  "serving_size": "Cups\u00a0(36g)",
+                  "nutrition": {
+                    "kcal": "140kcal",
+                    "pro": "2gm",
+                    "fat": "2gm",
+                    "cho": "31gm"
+                  }
+                }
+              },
+              {
+                "name": "Gluten-Free Udi's Granola",
+                "itemsize": {
+                  "serving_size": "1/2 Cup\u00a0(52g)",
+                  "nutrition": {
+                    "kcal": "220kcal",
+                    "pro": "5gm",
+                    "fat": "8gm",
+                    "cho": "31gm"
+                  }
+                }
+              },
+              {
+                "name": "Frosted Flakes",
+                "itemsize": {
+                  "serving_size": "Cup\u00a0(33g)",
+                  "nutrition": {
+                    "kcal": "120kcal",
+                    "pro": "2gm",
+                    "fat": "0gm",
+                    "cho": "30gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Deli",
+            "menuitem": [
+              {
+                "name": "Sliced Cheddar Cheese",
+                "itemsize": {
+                  "serving_size": "Slice\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "110kcal",
+                    "pro": "7gm",
+                    "fat": "9gm",
+                    "cho": "1gm"
+                  }
+                }
+              },
+              {
+                "name": "Sliced Pepper Jack Cheese",
+                "itemsize": {
+                  "serving_size": "Slice\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "100kcal",
+                    "pro": "7gm",
+                    "fat": "8gm",
+                    "cho": "1gm"
+                  }
+                }
+              },
+              {
+                "name": "Sliced Swiss Cheese",
+                "itemsize": {
+                  "serving_size": "Slice\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "110kcal",
+                    "pro": "7gm",
+                    "fat": "8gm",
+                    "cho": "2gm"
+                  }
+                }
+              },
+              {
+                "name": "Sliced Provolone Cheese",
+                "itemsize": {
+                  "serving_size": "Slice\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "100kcal",
+                    "pro": "7gm",
+                    "fat": "8gm",
+                    "cho": "1gm"
+                  }
+                }
+              },
+              {
+                "name": "Sliced American Cheese",
+                "itemsize": {
+                  "serving_size": "Slice\u00a0(14g)",
+                  "nutrition": {
+                    "kcal": "50kcal",
+                    "pro": "2gm",
+                    "fat": "4.5gm",
+                    "cho": "1gm"
+                  }
+                }
+              },
+              {
+                "name": "Turkey",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(29g)",
+                  "nutrition": {
+                    "kcal": "25kcal",
+                    "pro": "5gm",
+                    "fat": "0gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Hard Salami",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "120kcal",
+                    "pro": "5gm",
+                    "fat": "10gm",
+                    "cho": "1gm"
+                  }
+                }
+              },
+              {
+                "name": "Roast Beef",
+                "itemsize": {
+                  "serving_size": "1 oz Slice\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "25kcal",
+                    "pro": "5gm",
+                    "fat": "1gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Ham",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "30kcal",
+                    "pro": "4gm",
+                    "fat": "1gm",
+                    "cho": "1gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Dessert",
+            "menuitem": [
+              {
+                "name": "Cherry Dole Whip",
+                "itemsize": {
+                  "serving_size": "1/2 Cup\u00a0(113g)",
+                  "nutrition": {
+                    "kcal": "90kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "22gm"
+                  }
+                }
+              },
+              {
+                "name": "Pomegranate Dole Whip",
+                "itemsize": {
+                  "serving_size": "1/2 Cup\u00a0(113g)",
+                  "nutrition": {
+                    "kcal": "90kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "21gm"
+                  }
+                }
+              },
+              {
+                "name": "Lemon Dole Whip",
+                "itemsize": {
+                  "serving_size": "1/2 Cup\u00a0(117g)",
+                  "nutrition": {
+                    "kcal": "100kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "23gm"
+                  }
+                }
+              },
+              {
+                "name": "Raspberry Dole Whip",
+                "itemsize": {
+                  "serving_size": "1/2 Cup\u00a0(117g)",
+                  "nutrition": {
+                    "kcal": "90kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "23gm"
+                  }
+                }
+              },
+              {
+                "name": "Pineapple Dole Whip",
+                "itemsize": {
+                  "serving_size": "1/2 cup\u00a0(117g)",
+                  "nutrition": {
+                    "kcal": "100kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "23gm"
+                  }
+                }
+              },
+              {
+                "name": "Strawberry Dole Whip",
+                "itemsize": {
+                  "serving_size": "1/2 Cup\u00a0(113g)",
+                  "nutrition": {
+                    "kcal": "90kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "22gm"
+                  }
+                }
+              },
+              {
+                "name": "Mango Dole Whip",
+                "itemsize": {
+                  "serving_size": "1/2 Cup\u00a0(117g)",
+                  "nutrition": {
+                    "kcal": "100kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "23gm"
+                  }
+                }
+              },
+              {
+                "name": "Chocolate Soft Serve",
+                "itemsize": {
+                  "serving_size": "1/2 Cup\u00a0(80g)",
+                  "nutrition": {
+                    "kcal": "100kcal",
+                    "pro": "2gm",
+                    "fat": "2.5gm",
+                    "cho": "16gm"
+                  }
+                }
+              },
+              {
+                "name": "Vanilla Soft Serve",
+                "itemsize": {
+                  "serving_size": "1/2 Cup\u00a0(80g)",
+                  "nutrition": {
+                    "kcal": "120kcal",
+                    "pro": "3gm",
+                    "fat": "4.5gm",
+                    "cho": "17gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Dessert Accompaniments",
+            "menuitem": [
+              {
+                "name": "Caramel Syrup",
+                "itemsize": {
+                  "serving_size": "2 Tablespoons\u00a0(41g)",
+                  "nutrition": {
+                    "kcal": "120kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "26gm"
+                  }
+                }
+              },
+              {
+                "name": "Chocolate Sprinkles",
+                "itemsize": {
+                  "serving_size": "1 Tablespoon\u00a0(7g)",
+                  "nutrition": {
+                    "kcal": "35kcal",
+                    "pro": "0gm",
+                    "fat": "2gm",
+                    "cho": "5gm"
+                  }
+                }
+              },
+              {
+                "name": "Ice Cream Cones",
+                "itemsize": {
+                  "serving_size": "1 Cone\u00a0(7g)",
+                  "nutrition": {
+                    "kcal": "25kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "5gm"
+                  }
+                }
+              },
+              {
+                "name": "Chocolate Chips",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "130kcal",
+                    "pro": "1gm",
+                    "fat": "8gm",
+                    "cho": "19gm"
+                  }
+                }
+              },
+              {
+                "name": "Chocolate Cookie Crumbles",
+                "itemsize": {
+                  "serving_size": "Tablespoon\u00a0(6g)",
+                  "nutrition": {
+                    "kcal": "25kcal",
+                    "pro": "0gm",
+                    "fat": "1gm",
+                    "cho": "4gm"
+                  }
+                }
+              },
+              {
+                "name": "Rainbow Sprinkles",
+                "itemsize": {
+                  "serving_size": "1 Tablespoon\u00a0(7g)",
+                  "nutrition": {
+                    "kcal": "35kcal",
+                    "pro": "0gm",
+                    "fat": "1.5gm",
+                    "cho": "5gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Hot Beverages",
+            "menuitem": [
+              {
+                "name": "Flavored Assorted Tea Bags",
+                "itemsize": {
+                  "serving_size": "Each\u00a0(2g)",
+                  "nutrition": {
+                    "kcal": "0kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Green Tea",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(238g)",
+                  "nutrition": {
+                    "kcal": "0kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Freshly Brewed Coffee",
+                "itemsize": {
+                  "serving_size": "8 oz\u00a0(234g)",
+                  "nutrition": {
+                    "kcal": "0kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Chai Tea",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(227g)",
+                  "nutrition": {
+                    "kcal": "150kcal",
+                    "pro": "2gm",
+                    "fat": "1gm",
+                    "cho": "33gm"
+                  }
+                }
+              },
+              {
+                "name": "Hot Chocolate",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(227g)",
+                  "nutrition": {
+                    "kcal": "160kcal",
+                    "pro": "2gm",
+                    "fat": "2gm",
+                    "cho": "37gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Juice",
+            "menuitem": [
+              {
+                "name": "Cranberry Juice",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(227g)",
+                  "nutrition": {
+                    "kcal": "20kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "5gm"
+                  }
+                }
+              },
+              {
+                "name": "Apple Juice",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(227g)",
+                  "nutrition": {
+                    "kcal": "80kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "20gm"
+                  }
+                }
+              },
+              {
+                "name": "Grapefruit Juice",
+                "itemsize": {
+                  "serving_size": "4 oz Serving\u00a0(113g)",
+                  "nutrition": {
+                    "kcal": "50kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "13gm"
+                  }
+                }
+              },
+              {
+                "name": "Orange Juice",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(227g)",
+                  "nutrition": {
+                    "kcal": "100kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "25gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Milk",
+            "menuitem": [
+              {
+                "name": "Original Almond Milk",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(227g)",
+                  "nutrition": {
+                    "kcal": "60kcal",
+                    "pro": "0gm",
+                    "fat": "2.5gm",
+                    "cho": "8gm"
+                  }
+                }
+              },
+              {
+                "name": "Vanilla Almond Milk",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(227g)",
+                  "nutrition": {
+                    "kcal": "80kcal",
+                    "pro": "0gm",
+                    "fat": "2.5gm",
+                    "cho": "13gm"
+                  }
+                }
+              },
+              {
+                "name": "Chocolate Milk",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(236g)",
+                  "nutrition": {
+                    "kcal": "150kcal",
+                    "pro": "8gm",
+                    "fat": "2.5gm",
+                    "cho": "10gm"
+                  }
+                }
+              },
+              {
+                "name": "2% Milk",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(210g)",
+                  "nutrition": {
+                    "kcal": "100kcal",
+                    "pro": "7gm",
+                    "fat": "4gm",
+                    "cho": "10gm"
+                  }
+                }
+              },
+              {
+                "name": "Original Rice Milk",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(227g)",
+                  "nutrition": {
+                    "kcal": "110kcal",
+                    "pro": "0gm",
+                    "fat": "2.5gm",
+                    "cho": "23gm"
+                  }
+                }
+              },
+              {
+                "name": "Skim Milk",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(219g)",
+                  "nutrition": {
+                    "kcal": "80kcal",
+                    "pro": "8gm",
+                    "fat": "0.5gm",
+                    "cho": "11gm"
+                  }
+                }
+              },
+              {
+                "name": "Vanilla Soy Milk",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(227g)",
+                  "nutrition": {
+                    "kcal": "200kcal",
+                    "pro": "13gm",
+                    "fat": "8gm",
+                    "cho": "20gm"
+                  }
+                }
+              },
+              {
+                "name": "Original Soy Milk",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(227g)",
+                  "nutrition": {
+                    "kcal": "200kcal",
+                    "pro": "15gm",
+                    "fat": "8gm",
+                    "cho": "17gm"
+                  }
+                }
+              },
+              {
+                "name": "Lactose Free Milk",
+                "itemsize": {
+                  "serving_size": "8 Ounces\u00a0(227g)",
+                  "nutrition": {
+                    "kcal": "70kcal",
+                    "pro": "7gm",
+                    "fat": "0gm",
+                    "cho": "10gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Salad Toppings",
+            "menuitem": [
+              {
+                "name": "Dried Cranberries",
+                "itemsize": {
+                  "serving_size": "Ounce\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "110kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "28gm"
+                  }
+                }
+              },
+              {
+                "name": "Seasoned Croutons",
+                "itemsize": {
+                  "serving_size": "6 Croutons\u00a0(7g)",
+                  "nutrition": {
+                    "kcal": "35kcal",
+                    "pro": "1gm",
+                    "fat": "1gm",
+                    "cho": "5gm"
+                  }
+                }
+              },
+              {
+                "name": "Low Fat Cottage Cheese",
+                "itemsize": {
+                  "serving_size": "1/2 Cup\u00a0(113g)",
+                  "nutrition": {
+                    "kcal": "90kcal",
+                    "pro": "11gm",
+                    "fat": "2.5gm",
+                    "cho": "6gm"
+                  }
+                }
+              },
+              {
+                "name": "Crumbled Feta Cheese",
+                "itemsize": {
+                  "serving_size": "Tablespoon\u00a0(14g)",
+                  "nutrition": {
+                    "kcal": "35kcal",
+                    "pro": "3gm",
+                    "fat": "2gm",
+                    "cho": "1gm"
+                  }
+                }
+              },
+              {
+                "name": "Traditional Greek Pita",
+                "itemsize": {
+                  "serving_size": "Pita\u00a0(91g)",
+                  "nutrition": {
+                    "kcal": "210kcal",
+                    "pro": "7gm",
+                    "fat": "2.5gm",
+                    "cho": "41gm"
+                  }
+                }
+              },
+              {
+                "name": "Hummus",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "50kcal",
+                    "pro": "1gm",
+                    "fat": "4gm",
+                    "cho": "3gm"
+                  }
+                }
+              },
+              {
+                "name": "Hard Boiled Eggs",
+                "itemsize": {
+                  "serving_size": "Egg\u00a0(55g)",
+                  "nutrition": {
+                    "kcal": "80kcal",
+                    "pro": "7gm",
+                    "fat": "5gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Shredded Cheddar Cheese",
+                "itemsize": {
+                  "serving_size": "2 Tablespoons\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "110kcal",
+                    "pro": "6gm",
+                    "fat": "9gm",
+                    "cho": "1gm"
+                  }
+                }
+              },
+              {
+                "name": "Sliced Tomatoes",
+                "itemsize": {
+                  "serving_size": "Slice\u00a0(42g)",
+                  "nutrition": {
+                    "kcal": "10kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "2gm"
+                  }
+                }
+              },
+              {
+                "name": "Carrots",
+                "itemsize": {
+                  "serving_size": "1/2 Cup\u00a0(113g)",
+                  "nutrition": {
+                    "kcal": "40kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "10gm"
+                  }
+                }
+              },
+              {
+                "name": "Fresh Broccoli Florettes",
+                "itemsize": {
+                  "serving_size": "2 oz Serving\u00a0(57g)",
+                  "nutrition": {
+                    "kcal": "15kcal",
+                    "pro": "2gm",
+                    "fat": "0gm",
+                    "cho": "3gm"
+                  }
+                }
+              },
+              {
+                "name": "Sliced Green Peppers",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(29g)",
+                  "nutrition": {
+                    "kcal": "5kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "1gm"
+                  }
+                }
+              },
+              {
+                "name": "Edamame",
+                "itemsize": {
+                  "serving_size": "1/4 Cup\u00a0(57g)",
+                  "nutrition": {
+                    "kcal": "70kcal",
+                    "pro": "7gm",
+                    "fat": "3gm",
+                    "cho": "5gm"
+                  }
+                }
+              },
+              {
+                "name": "Roasted Sunflower Seeds",
+                "itemsize": {
+                  "serving_size": "2 Tablespoons\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "180kcal",
+                    "pro": "5gm",
+                    "fat": "15gm",
+                    "cho": "5gm"
+                  }
+                }
+              },
+              {
+                "name": "Garbanzo Beans",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "20kcal",
+                    "pro": "1gm",
+                    "fat": "0gm",
+                    "cho": "3gm"
+                  }
+                }
+              },
+              {
+                "name": "Black Beans",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "20kcal",
+                    "pro": "1gm",
+                    "fat": "0gm",
+                    "cho": "3gm"
+                  }
+                }
+              },
+              {
+                "name": "Sliced Cucumbers",
+                "itemsize": {
+                  "serving_size": "1 oz Portion\u00a0(27g)",
+                  "nutrition": {
+                    "kcal": "0kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Tofu",
+                "itemsize": {
+                  "serving_size": "2 oz Serving\u00a0(57g)",
+                  "nutrition": {
+                    "kcal": "80kcal",
+                    "pro": "9gm",
+                    "fat": "4.5gm",
+                    "cho": "1gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Salads",
+            "menuitem": [
+              {
+                "name": "Fresh Baby Spinach",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(24g)",
+                  "nutrition": {
+                    "kcal": "5kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Arcadian Blend Lettuce",
+                "itemsize": {
+                  "serving_size": "1/2 Cup\u00a0(21g)",
+                  "nutrition": {
+                    "kcal": "5kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Romaine Lettuce",
+                "itemsize": {
+                  "serving_size": "4 oz Serving\u00a0(113g)",
+                  "nutrition": {
+                    "kcal": "20kcal",
+                    "pro": "1gm",
+                    "fat": "0gm",
+                    "cho": "4gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Sauces",
+            "menuitem": [
+              {
+                "name": "Fat Free Raspberry Vinaigrette",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(32g)",
+                  "nutrition": {
+                    "kcal": "40kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "10gm"
+                  }
+                }
+              },
+              {
+                "name": "Caesar Salad Dressing",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "120kcal",
+                    "pro": "0gm",
+                    "fat": "13gm",
+                    "cho": "0gm"
+                  }
+                }
+              },
+              {
+                "name": "Fat Free Italian Salad Dressing",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(34g)",
+                  "nutrition": {
+                    "kcal": "15kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "3gm"
+                  }
+                }
+              },
+              {
+                "name": "Poppy Seed Dressing",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(31g)",
+                  "nutrition": {
+                    "kcal": "120kcal",
+                    "pro": "0gm",
+                    "fat": "10gm",
+                    "cho": "11gm"
+                  }
+                }
+              },
+              {
+                "name": "Sesame Ginger Vinaigrette",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(32g)",
+                  "nutrition": {
+                    "kcal": "130kcal",
+                    "pro": "0gm",
+                    "fat": "12gm",
+                    "cho": "6gm"
+                  }
+                }
+              },
+              {
+                "name": "Ranch Dressing",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(29g)",
+                  "nutrition": {
+                    "kcal": "100kcal",
+                    "pro": "0gm",
+                    "fat": "10gm",
+                    "cho": "0gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Waffle Bar",
+            "menuitem": [
+              {
+                "name": "Belgian Waffles",
+                "itemsize": {
+                  "serving_size": "Waffle\u00a0(162g)",
+                  "nutrition": {
+                    "kcal": "280kcal",
+                    "pro": "5gm",
+                    "fat": "3gm",
+                    "cho": "54gm"
+                  }
+                }
+              },
+              {
+                "name": "Gluten-Free Waffles",
+                "itemsize": {
+                  "serving_size": "Waffle\u00a0(162g)",
+                  "nutrition": {
+                    "kcal": "240kcal",
+                    "pro": "10gm",
+                    "fat": "0gm",
+                    "cho": "54gm"
+                  }
+                }
+              },
+              {
+                "name": "Sugar Free Syrup",
+                "itemsize": {
+                  "serving_size": "1/4 cup\u00a0(72g)",
+                  "nutrition": {
+                    "kcal": "25kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "10gm"
+                  }
+                }
+              },
+              {
+                "name": "Powdered Sugar",
+                "itemsize": {
+                  "serving_size": "Teaspoon\u00a0(2g)",
+                  "nutrition": {
+                    "kcal": "10kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "3gm"
+                  }
+                }
+              },
+              {
+                "name": "Maple Syrup",
+                "itemsize": {
+                  "serving_size": "1/4 Cup\u00a0(78g)",
+                  "nutrition": {
+                    "kcal": "280kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "70gm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Yogurt Bar",
+            "menuitem": [
+              {
+                "name": "Plain Greek Yogurt",
+                "itemsize": {
+                  "serving_size": "Cups\u00a0(227g)",
+                  "nutrition": {
+                    "kcal": "140kcal",
+                    "pro": "23gm",
+                    "fat": "0gm",
+                    "cho": "9gm"
+                  }
+                }
+              },
+              {
+                "name": "Vanilla Greek Yogurt",
+                "itemsize": {
+                  "serving_size": "Cups\u00a0(227g)",
+                  "nutrition": {
+                    "kcal": "170kcal",
+                    "pro": "17gm",
+                    "fat": "0gm",
+                    "cho": "24gm"
+                  }
+                }
+              },
+              {
+                "name": "Farm to Freezer Local Blueberries",
+                "itemsize": {
+                  "serving_size": "1 oz Serving\u00a0(36g)",
+                  "nutrition": {
+                    "kcal": "20kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "4gm"
+                  }
+                }
+              },
+              {
+                "name": "Mango",
+                "itemsize": {
+                  "serving_size": "1/4 Cup\u00a0(27g)",
+                  "nutrition": {
+                    "kcal": "15kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "4gm"
+                  }
+                }
+              },
+              {
+                "name": "Strawberries",
+                "itemsize": {
+                  "serving_size": "2 Tablespoons\u00a0(28g)",
+                  "nutrition": {
+                    "kcal": "10kcal",
+                    "pro": "0gm",
+                    "fat": "0gm",
+                    "cho": "3gm"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -30,6 +30,8 @@ struct Selector: View {
     @State private var mealExpanded: Bool = true
     @State private var extrasExpanded: Bool = true
     @State private var customExpanded: Bool = true
+    @State private var otherMenu: Menu?
+    @State private var otherExpanded: Bool = true
 
     // @AppStorage handles persistence automatically
     private func updateSelectedDiningHallCache() {}
@@ -65,6 +67,7 @@ struct Selector: View {
                 self.noMenuItems = false
             }
         }
+        otherMenu = MenuService.loadOtherMenu(diningHall: selectedDiningHall)
     }
 
     private func loadBudget() {
@@ -79,7 +82,7 @@ struct Selector: View {
             let date = DatabaseManager.getCurrentDate()
             let validMealID = try DatabaseManager.getOrCreateMealID(date: date, mealName: mealAddingTo)
 
-            let allMenuSources: [Menu?] = [menu, specialMenu]
+            let allMenuSources: [Menu?] = [menu, specialMenu, otherMenu]
             var addedItems = Set<String>()
             for source in allMenuSources {
                 guard let meals = source?.meal else { continue }
@@ -273,6 +276,98 @@ struct Selector: View {
                                                 }
                                             }
                                         }.padding(.bottom, 8)
+                                    }
+                                }
+                            }
+
+                            // Other menu items (non-daily: condiments, beverages, etc.)
+                            if mealAddingTo.lowercased() == "other", let otherMeals = otherMenu?.meal {
+                                ForEach(otherMeals.filter { $0.name?.lowercased() == "other" }, id: \.name) { meal in
+                                    if meal.course != nil {
+                                        Button(action: { withAnimation { otherExpanded.toggle() } }) {
+                                            HStack {
+                                                Text("Other")
+                                                    .font(.largeTitle)
+                                                    .bold()
+                                                    .foregroundStyle(Color.white)
+                                                Spacer()
+                                                Image(systemName: otherExpanded ? "chevron.up" : "chevron.down")
+                                                    .foregroundStyle(Color.white)
+                                                    .font(.title2)
+                                                    .padding(.trailing, 8)
+                                            }
+                                            .frame(width: 340, height: 60)
+                                            .padding(.horizontal)
+                                            .background(Color(.mBlue))
+                                            .cornerRadius(13)
+                                            .padding(.bottom, 8)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .onAppear { noMenuItems = false }
+                                    }
+                                    if otherExpanded, let courses = meal.course?.courseitem {
+                                        ForEach(courses, id: \.name) { course in
+                                            VStack {
+                                                HStack {
+                                                    Text(course.name ?? "Unnamed Course")
+                                                        .foregroundStyle(Color.mmaize)
+                                                        .font(.title3)
+                                                        .fontWeight(.bold)
+                                                        .padding(.leading, 15)
+                                                        .padding(.bottom, 4)
+                                                    Spacer()
+                                                }
+                                                ForEach(course.menuitem.item, id: \.name) { menuItem in
+                                                    VStack {
+                                                        HStack {
+                                                            Text(menuItem.name ?? "Unnamed MenuItem")
+                                                                .font(.system(size: 14))
+                                                                .padding(.leading, 15)
+                                                                .fontWeight(.semibold)
+                                                            NavigationLink(destination: NutritionViewer(name: menuItem.name ?? "Unnamed MenuItem", kcal: menuItem.itemsize?.nutrition?.kcal ?? "0kcal", pro: menuItem.itemsize?.nutrition?.pro ?? "0gm", fat: menuItem.itemsize?.nutrition?.fat ?? "0gm", cho: menuItem.itemsize?.nutrition?.cho ?? "0gm", serving: menuItem.itemsize?.serving_size ?? "N/A")) {
+                                                                Image(systemName: "info.circle")
+                                                                    .resizable()
+                                                                    .frame(width: 17, height: 17)
+                                                            }
+                                                            Spacer()
+                                                            let key = menuItem.name ?? ""
+                                                            if selectedItems.contains(key) {
+                                                                TextField("qty", text: Binding(
+                                                                    get: { quantities[key] ?? "1" },
+                                                                    set: { quantities[key] = $0 }
+                                                                ))
+                                                                .keyboardType(.decimalPad)
+                                                                .frame(width: 44)
+                                                                .multilineTextAlignment(.center)
+                                                                .textFieldStyle(.roundedBorder)
+                                                            }
+                                                            Toggle(isOn: Binding(
+                                                                get: { selectedItems.contains(key) },
+                                                                set: { isSelected in
+                                                                    if isSelected {
+                                                                        selectedItems.insert(key)
+                                                                        quantities[key] = "1"
+                                                                    } else {
+                                                                        selectedItems.remove(key)
+                                                                    }
+                                                                }
+                                                            )) {
+                                                                Image(systemName: selectedItems.contains(key) ? "checkmark.square.fill" : "square")
+                                                                    .foregroundStyle(Color.mBlue)
+                                                                    .animation(nil, value: selectedItems)
+                                                                    .font(.title)
+                                                            }
+                                                            .sensoryFeedback(.increase, trigger: selectedItems)
+                                                            .labelsHidden()
+                                                            .toggleStyle(.button)
+                                                            .padding(.trailing, 15)
+                                                            .buttonStyle(.plain)
+                                                        }
+                                                        Divider()
+                                                    }
+                                                }
+                                            }.padding(.bottom, 8)
+                                        }
                                     }
                                 }
                             }

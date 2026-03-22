@@ -69,6 +69,26 @@ class MenuService {
         }
     }
 
+    /// Load the "Other" menu (non-daily items like condiments, beverages, etc.) from bundled JSON.
+    static func loadOtherMenu(diningHall: String) -> Menu? {
+        let resourceName = diningHall.replacingOccurrences(of: " ", with: "_") + "_other"
+        guard let path = Bundle.main.path(forResource: resourceName, ofType: "json") else {
+            print("Other menu JSON not found for \(diningHall)")
+            return nil
+        }
+
+        do {
+            let data = try Data(contentsOf: URL(fileURLWithPath: path))
+            let decoder = JSONDecoder()
+            let itemFeed = try decoder.decode(apiCalled.self, from: data)
+            print("Other menu loaded successfully for \(diningHall).")
+            return itemFeed.menu
+        } catch {
+            print("Error loading other menu: \(error)")
+            return nil
+        }
+    }
+
     /// Load the special/extras menu from bundled JSON.
     static func loadSpecialMenu() -> Menu? {
         guard let path = Bundle.main.path(forResource: "special_menu", ofType: "json") else {
