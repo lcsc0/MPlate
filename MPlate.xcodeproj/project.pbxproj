@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB0001010101010101010101 /* Bursley_Dining_Hall_other.json in Resources */ = {isa = PBXBuildFile; fileRef = AA0001010101010101010101 /* Bursley_Dining_Hall_other.json */; };
+		BB0002020202020202020202 /* East_Quad_Dining_Hall_other.json in Resources */ = {isa = PBXBuildFile; fileRef = AA0002020202020202020202 /* East_Quad_Dining_Hall_other.json */; };
+		BB0003030303030303030303 /* Lawyers_Club_Dining_Hall_other.json in Resources */ = {isa = PBXBuildFile; fileRef = AA0003030303030303030303 /* Lawyers_Club_Dining_Hall_other.json */; };
+		BB0004040404040404040404 /* Markley_Dining_Hall_other.json in Resources */ = {isa = PBXBuildFile; fileRef = AA0004040404040404040404 /* Markley_Dining_Hall_other.json */; };
+		BB0005050505050505050505 /* Martha_Cook_Dining_Hall_other.json in Resources */ = {isa = PBXBuildFile; fileRef = AA0005050505050505050505 /* Martha_Cook_Dining_Hall_other.json */; };
+		BB0006060606060606060606 /* Mosher_Jordan_Dining_Hall_other.json in Resources */ = {isa = PBXBuildFile; fileRef = AA0006060606060606060606 /* Mosher_Jordan_Dining_Hall_other.json */; };
+		BB0007070707070707070707 /* North_Quad_Dining_Hall_other.json in Resources */ = {isa = PBXBuildFile; fileRef = AA0007070707070707070707 /* North_Quad_Dining_Hall_other.json */; };
+		BB0008080808080808080808 /* South_Quad_Dining_Hall_other.json in Resources */ = {isa = PBXBuildFile; fileRef = AA0008080808080808080808 /* South_Quad_Dining_Hall_other.json */; };
+		BB0009090909090909090909 /* Twigs_at_Oxford_other.json in Resources */ = {isa = PBXBuildFile; fileRef = AA0009090909090909090909 /* Twigs_at_Oxford_other.json */; };
 		00D6D117147A48AEBF242284 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D3C70AAEC2CE20DC10B3CF /* HistoryView.swift */; };
 		096281CCDE1B0D6977AE1389 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23EA800A1AFF9A9DC7B15D7 /* ContentView.swift */; };
 		18B24CBCF2338BE641AB3FA5 /* FoodItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E7CC85069A36D9D0ECFBB9 /* FoodItem.swift */; };
@@ -59,6 +68,15 @@
 		31937F1D2D3191DF00397676 /* North_Quad_Dining_Hall.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = North_Quad_Dining_Hall.json; sourceTree = "<group>"; };
 		31937F1E2D3191DF00397676 /* South_Quad_Dining_Hall.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = South_Quad_Dining_Hall.json; sourceTree = "<group>"; };
 		31937F1F2D3191DF00397676 /* Twigs_at_Oxford.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Twigs_at_Oxford.json; sourceTree = "<group>"; };
+		AA0001010101010101010101 /* Bursley_Dining_Hall_other.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Bursley_Dining_Hall_other.json; sourceTree = "<group>"; };
+		AA0002020202020202020202 /* East_Quad_Dining_Hall_other.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = East_Quad_Dining_Hall_other.json; sourceTree = "<group>"; };
+		AA0003030303030303030303 /* Lawyers_Club_Dining_Hall_other.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Lawyers_Club_Dining_Hall_other.json; sourceTree = "<group>"; };
+		AA0004040404040404040404 /* Markley_Dining_Hall_other.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Markley_Dining_Hall_other.json; sourceTree = "<group>"; };
+		AA0005050505050505050505 /* Martha_Cook_Dining_Hall_other.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Martha_Cook_Dining_Hall_other.json; sourceTree = "<group>"; };
+		AA0006060606060606060606 /* Mosher_Jordan_Dining_Hall_other.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Mosher_Jordan_Dining_Hall_other.json; sourceTree = "<group>"; };
+		AA0007070707070707070707 /* North_Quad_Dining_Hall_other.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = North_Quad_Dining_Hall_other.json; sourceTree = "<group>"; };
+		AA0008080808080808080808 /* South_Quad_Dining_Hall_other.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = South_Quad_Dining_Hall_other.json; sourceTree = "<group>"; };
+		AA0009090909090909090909 /* Twigs_at_Oxford_other.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Twigs_at_Oxford_other.json; sourceTree = "<group>"; };
 		31AA10042CF4567C004C3380 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		34A93E476B1B5583D9137676 /* ToggleManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ToggleManager.swift; sourceTree = "<group>"; };
 		47EC3D802A4F4E3456DC1641 /* SelectorView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SelectorView.swift; sourceTree = "<group>"; };
@@ -147,6 +165,15 @@
 				31937F1F2D3191DF00397676 /* Twigs_at_Oxford.json */,
 				31937F182D3191CE00397676 /* Lawyers_Club_Dining_Hall.json */,
 				313594732D2A020200AF9D5F /* special_menu.json */,
+				AA0001010101010101010101 /* Bursley_Dining_Hall_other.json */,
+				AA0002020202020202020202 /* East_Quad_Dining_Hall_other.json */,
+				AA0003030303030303030303 /* Lawyers_Club_Dining_Hall_other.json */,
+				AA0004040404040404040404 /* Markley_Dining_Hall_other.json */,
+				AA0005050505050505050505 /* Martha_Cook_Dining_Hall_other.json */,
+				AA0006060606060606060606 /* Mosher_Jordan_Dining_Hall_other.json */,
+				AA0007070707070707070707 /* North_Quad_Dining_Hall_other.json */,
+				AA0008080808080808080808 /* South_Quad_Dining_Hall_other.json */,
+				AA0009090909090909090909 /* Twigs_at_Oxford_other.json */,
 				3172A1362CBC4CD500BDD5BC /* Assets.xcassets */,
 				3172A1382CBC4CD500BDD5BC /* Preview Content */,
 				1100653420445BC7A7AE4D6F /* Models */,
@@ -294,6 +321,15 @@
 				31937F172D3190ED00397676 /* Markley_Dining_Hall.json in Resources */,
 				3172A1372CBC4CD500BDD5BC /* Assets.xcassets in Resources */,
 				31937F192D3191CE00397676 /* Lawyers_Club_Dining_Hall.json in Resources */,
+				BB0001010101010101010101 /* Bursley_Dining_Hall_other.json in Resources */,
+				BB0002020202020202020202 /* East_Quad_Dining_Hall_other.json in Resources */,
+				BB0003030303030303030303 /* Lawyers_Club_Dining_Hall_other.json in Resources */,
+				BB0004040404040404040404 /* Markley_Dining_Hall_other.json in Resources */,
+				BB0005050505050505050505 /* Martha_Cook_Dining_Hall_other.json in Resources */,
+				BB0006060606060606060606 /* Mosher_Jordan_Dining_Hall_other.json in Resources */,
+				BB0007070707070707070707 /* North_Quad_Dining_Hall_other.json in Resources */,
+				BB0008080808080808080808 /* South_Quad_Dining_Hall_other.json in Resources */,
+				BB0009090909090909090909 /* Twigs_at_Oxford_other.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

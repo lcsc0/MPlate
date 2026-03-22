@@ -337,6 +337,49 @@ struct Tracker: SwiftUI.View {
                             Divider()
                         }
                     }
+                    VStack {
+                        HStack {
+                            Text("Other")
+                                .font(.title2)
+                                .multilineTextAlignment(.leading)
+                                .padding(.leading, 123.0)
+                            Spacer()
+                            NavigationLink(destination: Selector(mealAddingTo: "Other")) {
+                                Image(systemName: "plus.app.fill")
+                                    .resizable()
+                                    .frame(width: 35, height: 35)
+                                    .foregroundStyle(Color.mmaize)
+                                    .padding(16)
+                            }
+                        }.foregroundStyle(Color.white)
+                            .frame(width: 360, height: 60)
+                            .background(Color.mBlue)
+                            .clipShape(RoundedRectangle(cornerSize: CGSize(width: 13, height: 10)))
+
+                        ForEach(otherItems, id: \.id) { item in
+                            HStack {
+                                Text(item.name + " (\(item.kcal.dropLast(4)) Cal)")
+                                NavigationLink(destination: NutritionViewer(name: item.name, kcal: item.kcal, pro: item.pro, fat: item.fat, cho: item.cho, serving: item.serving)) {
+                                    Image(systemName: "info.circle")
+                                        .resizable()
+                                        .font(.title)
+                                        .frame(width: 20, height: 20)
+                                }
+                                Spacer()
+                                Text("x" + item.qty)
+                                    .padding(.trailing, 8)
+                                Button(action: { deleteItem(item: item) }) {
+                                    Image(systemName: "trash")
+                                        .resizable()
+                                        .foregroundStyle(Color.mBlue)
+                                        .frame(width: 20, height: 25)
+                                }
+                            }.padding(.leading, 15)
+                                .padding(.trailing, 15)
+                                .padding(.vertical, 8)
+                            Divider()
+                        }
+                    }
                 }
             }
             .onAppear {
@@ -344,6 +387,7 @@ struct Tracker: SwiftUI.View {
                 DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Breakfast") { items in breakfastItems = items }
                 DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Lunch") { items in lunchItems = items }
                 DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Dinner") { items in dinnerItems = items }
+                DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Other") { items in otherItems = items }
                 recalculateTotals()
                 CalorieGoal = DatabaseManager.getCurrentCalorieGoal()
             }
