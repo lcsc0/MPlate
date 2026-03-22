@@ -253,10 +253,10 @@ struct Tracker: SwiftUI.View {
                     }
                     VStack {
                         HStack {
-                            Text("Lunch")
+                            Text(Calendar.current.isDateInWeekend(Date()) ? "Lunch / Brunch" : "Lunch")
                                 .font(.title2)
                                 .multilineTextAlignment(.leading)
-                                .padding(.leading, 123.0)
+                                .padding(.leading, Calendar.current.isDateInWeekend(Date()) ? 85.0 : 123.0)
                             Spacer()
                             NavigationLink(destination: Selector(mealAddingTo: "Lunch")) {
                                 Image(systemName: "plus.app.fill")
