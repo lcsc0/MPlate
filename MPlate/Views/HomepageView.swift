@@ -35,11 +35,11 @@ struct Homepage: SwiftUI.View {
                     VStack(spacing: 0) {
                         Spacer().frame(height: 20)
                         HStack {
-                            Text("M")
+                            Text("Maize")
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
                                 .foregroundStyle(Color.mmaize)
-                            Text("Cals")
+                            Text("Plate")
                                 .font(.largeTitle)
                                 .fontWeight(.semibold)
                                 .foregroundStyle(Color.mBlue)

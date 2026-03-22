@@ -51,11 +51,11 @@ struct NutritionViewer: SwiftUI.View {
                 Spacer()
 
                 HStack {
-                    Text("M")
+                    Text("Maize")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundStyle(Color.mmaize)
-                    Text("Cals")
+                    Text("Plate")
                         .font(.largeTitle)
                         .fontWeight(.semibold)
                         .foregroundStyle(Color.mBlue)
