@@ -27,7 +27,7 @@ struct Tracker: SwiftUI.View {
     @AppStorage("goalVitC") private var goalVitC: Int = 90
     @AppStorage("goalVitD") private var goalVitD: Int = 20
     @AppStorage("goalPotassium") private var goalPotassium: Int = 4700
-    @State private var nutrientsExpanded: Bool = false
+    @State private var showReport: Bool = false
     @State private var totalFiber: Int = 0
     @State private var totalSodium: Int = 0
     @State private var totalSugar: Int = 0
@@ -132,66 +132,12 @@ struct Tracker: SwiftUI.View {
                         Text("Carbs").bold()
                         Text("\(totalCarbs)")
                     }.font(.title3).padding(.horizontal, 6)
-                    VStack {
-                        VStack {
-                            Text(String(formatNumberWithCommas(Int(CalorieGoal - Int64(totalCalories))) ?? ""))
-                                .bold()
-                            Text("Left")
-                        }
-                        .padding(5)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.primary.opacity(0.3), lineWidth: 0.5)
-                        )
-                    }.padding(.horizontal, 6)
                 }
 
                 ProgressView(value: (Double(totalCalories) / Double(CalorieGoal)))
                     .progressViewStyle(LinearProgressViewStyle())
                     .frame(width: 400)
                     .padding(6)
-
-                // Extended nutrients card
-                VStack(spacing: 0) {
-                    Button(action: { withAnimation { nutrientsExpanded.toggle() } }) {
-                        HStack {
-                            Image(systemName: "flask.fill")
-                                .foregroundStyle(Color.mBlue)
-                                .font(.caption)
-                            Text("Nutrients")
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                            Spacer()
-                            Image(systemName: nutrientsExpanded ? "chevron.up" : "chevron.down")
-                                .font(.caption2)
-                                .foregroundStyle(Color.gray)
-                        }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                    }
-                    .buttonStyle(.plain)
-
-                    if nutrientsExpanded {
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
-                            NutrientProgressRow(label: "Fiber", value: totalFiber, goal: goalFiber, unit: "g")
-                            NutrientProgressRow(label: "Sodium", value: totalSodium, goal: goalSodium, unit: "mg")
-                            NutrientProgressRow(label: "Sugar", value: totalSugar, goal: goalSugar, unit: "g")
-                            NutrientProgressRow(label: "Sat Fat", value: totalSatFat, goal: goalFat, unit: "g")
-                            NutrientProgressRow(label: "Calcium", value: totalCalcium, goal: goalCalcium, unit: "mg")
-                            NutrientProgressRow(label: "Iron", value: totalIron, goal: goalIron, unit: "mg")
-                            NutrientProgressRow(label: "Vit C", value: totalVitC, goal: goalVitC, unit: "mg")
-                            NutrientProgressRow(label: "Vit D", value: totalVitD, goal: goalVitD, unit: "mcg")
-                            NutrientProgressRow(label: "Potassium", value: totalPotassium, goal: goalPotassium, unit: "mg")
-                            NutrientProgressRow(label: "Cholesterol", value: totalCholesterol, goal: 300, unit: "mg")
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.bottom, 8)
-                    }
-                }
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
-                .padding(.horizontal, 18)
-                .padding(.bottom, 4)
 
                 // Dining hall banner
                 HStack {
@@ -502,6 +448,44 @@ struct Tracker: SwiftUI.View {
                                 .padding(.vertical, 8)
                             Divider()
                         }
+                    }
+                    // Generate Report button
+                    Button {
+                        showReport = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "doc.text.magnifyingglass")
+                            Text("Generate Report")
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundStyle(Color.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Color.mBlue)
+                        .cornerRadius(13)
+                        .padding(.horizontal, 18)
+                        .padding(.top, 8)
+                        .padding(.bottom, 24)
+                    }
+                    .buttonStyle(.plain)
+                    .sheet(isPresented: $showReport) {
+                        DailyReportView(
+                            totalCalories: totalCalories,
+                            calorieGoal: Int(CalorieGoal),
+                            totalProtein: totalProtein,
+                            totalFat: totalFat,
+                            totalCarbs: totalCarbs,
+                            totalFiber: totalFiber,
+                            totalSodium: totalSodium,
+                            totalSugar: totalSugar,
+                            totalSatFat: totalSatFat,
+                            totalCholesterol: totalCholesterol,
+                            totalCalcium: totalCalcium,
+                            totalIron: totalIron,
+                            totalVitC: totalVitC,
+                            totalVitD: totalVitD,
+                            totalPotassium: totalPotassium
+                        )
                     }
                 }
             }
