@@ -1,6 +1,6 @@
 //
 //  AIService.swift
-//  M-Cals
+//  MaizePlate
 //
 //  Calls the Anthropic Claude API to generate daily meal tips and
 //  dining hall item recommendations based on logged nutrition data.
@@ -22,10 +22,11 @@ struct MealSuggestion {
         let name: String
         let reason: String
         let calories: Int
+        let portion: String   // e.g. "1 serving (180g)", "2 slices"
     }
 }
 
-// MARK: - Input model (menu item passed in from Selector)
+// MARK: - Input model
 
 struct AIMenuItem {
     let name: String
@@ -33,6 +34,7 @@ struct AIMenuItem {
     let protein: Int
     let fat: Int
     let carbs: Int
+    let serving: String   // serving size string from menu, e.g. "1 cup", "3 oz"
 }
 
 // MARK: - Service
@@ -47,14 +49,16 @@ class AIService: ObservableObject {
         UserDefaults.standard.string(forKey: "anthropicApiKey") ?? ""
     }
 
-    // MARK: Daily summary (Tracker tab)
+    // MARK: Tracker suggestions — specific items from today's menu + other
 
-    func getDailySummary(
+    func getTrackerSuggestions(
         totalCalories: Int,
         totalProtein: Int,
         totalFat: Int,
         totalCarbs: Int,
-        calorieGoal: Int
+        calorieGoal: Int,
+        diningHall: String,
+        menuItems: [AIMenuItem]
     ) async {
         guard !apiKey.isEmpty else {
             errorMessage = "Add your Anthropic API key in Settings to enable AI suggestions."
@@ -65,32 +69,58 @@ class AIService: ObservableObject {
         errorMessage = nil
         suggestion = nil
 
-        let pct = calorieGoal > 0 ? Int(Double(totalCalories) / Double(calorieGoal) * 100) : 0
         let remaining = max(0, calorieGoal - totalCalories)
+        let remainingPro = max(0, 150 - totalProtein)
+        let pct = calorieGoal > 0 ? Int(Double(totalCalories) / Double(calorieGoal) * 100) : 0
+
+        let menuList: String
+        if menuItems.isEmpty {
+            menuList = "No menu data available."
+        } else {
+            menuList = menuItems.prefix(80).map {
+                "\($0.name) | serving: \($0.serving) | \($0.kcal) cal | \($0.protein)g pro | \($0.fat)g fat | \($0.carbs)g carbs"
+            }.joined(separator: "\n")
+        }
 
         let userMessage = """
+        Dining hall: \(diningHall)
+
         Today's nutrition so far:
-        - Calories: \(totalCalories) / \(calorieGoal) goal (\(pct)% complete, \(remaining) remaining)
-        - Protein: \(totalProtein)g
+        - Calories: \(totalCalories) / \(calorieGoal) (\(pct)% of goal, \(remaining) cal remaining)
+        - Protein: \(totalProtein)g (approx \(remainingPro)g still needed)
         - Fat: \(totalFat)g
         - Carbs: \(totalCarbs)g
 
-        Give practical meal tips for the rest of the day to hit the calorie goal with balanced macros.
+        Available items today (name | serving size | calories | protein | fat | carbs):
+        \(menuList)
+
+        Recommend 3–5 specific items from the list above that best fill my remaining \(remaining) calories and \(remainingPro)g protein. Include exactly how much to eat (e.g. "1 serving", "2 scoops") and why.
         """
 
         let systemPrompt = """
-        You are a concise nutrition assistant for a University of Michigan student tracking macros at dining halls.
-        Give 2-3 short, actionable tips based on their current intake vs goal.
-        Respond with valid JSON only: {"summary": "one sentence", "tips": ["tip1", "tip2", "tip3"]}
-        Keep each tip under 15 words. No markdown in JSON values.
+        You are a concise nutrition coach for a University of Michigan student eating in dining halls today.
+        Recommend specific items from the EXACT list provided — do not invent items.
+        Use item names EXACTLY as written. Each suggestion must include a concrete portion amount.
+        Respond with valid JSON only:
+        {
+          "summary": "one sentence overview of the plan",
+          "tips": ["one brief tip if calories are very low or very high, otherwise empty array"],
+          "recommendedItems": [
+            {"name": "exact item name", "reason": "why + how much in under 12 words", "calories": 000, "portion": "e.g. 1 cup or 2 slices"}
+          ]
+        }
+        No markdown in JSON values.
         """
 
         do {
-            let raw = try await callClaude(system: systemPrompt, user: userMessage)
+            let raw = try await callClaude(system: systemPrompt, user: userMessage, maxTokens: 900)
             let cleaned = extractJSON(from: raw)
             if let data = cleaned.data(using: .utf8),
-               let json = try? JSONDecoder().decode(SummaryResponse.self, from: data) {
-                suggestion = MealSuggestion(summary: json.summary, tips: json.tips, recommendedItems: [])
+               let json = try? JSONDecoder().decode(RecommendationResponse.self, from: data) {
+                let items = json.recommendedItems.map {
+                    MealSuggestion.RecommendedItem(name: $0.name, reason: $0.reason, calories: $0.calories, portion: $0.portion ?? "1 serving")
+                }
+                suggestion = MealSuggestion(summary: json.summary, tips: json.tips, recommendedItems: items)
             } else {
                 suggestion = MealSuggestion(summary: raw, tips: [], recommendedItems: [])
             }
@@ -101,7 +131,7 @@ class AIService: ObservableObject {
         isLoading = false
     }
 
-    // MARK: Dining recommendations (Selector tab)
+    // MARK: Dining recommendations (Selector tab sparkle button)
 
     func getDiningRecommendations(
         menuItems: [AIMenuItem],
@@ -122,8 +152,8 @@ class AIService: ObservableObject {
         errorMessage = nil
         suggestion = nil
 
-        let menuList = menuItems.prefix(50).map {
-            "\($0.name) | \($0.kcal) cal | \($0.protein)g pro | \($0.fat)g fat | \($0.carbs)g carbs"
+        let menuList = menuItems.prefix(80).map {
+            "\($0.name) | serving: \($0.serving) | \($0.kcal) cal | \($0.protein)g pro | \($0.fat)g fat | \($0.carbs)g carbs"
         }.joined(separator: "\n")
 
         let userMessage = """
@@ -131,28 +161,34 @@ class AIService: ObservableObject {
         Remaining protein needed: \(remainingProtein)g
         Weight goal: \(weightGoal)
 
-        Available menu items (name | calories | protein | fat | carbs):
+        Available items (name | serving | calories | protein | fat | carbs):
         \(menuList)
 
-        Recommend the best 3-5 items from this specific menu that fit my remaining budget.
+        Recommend the best 3–5 items from this exact list. Include exact portion sizes and a brief reason for each.
         """
 
         let systemPrompt = """
         You are a nutrition assistant for a University of Michigan dining hall app.
-        Recommend specific items from the EXACT menu list provided. Do not invent items.
-        Use the item names EXACTLY as written in the list.
+        Recommend specific items from the EXACT list provided. Do not invent items.
+        Use item names EXACTLY as written.
         Respond with valid JSON only:
-        {"summary": "brief one-sentence plan", "tips": [], "recommendedItems": [{"name": "exact item name", "reason": "under 12 words", "calories": 000}]}
+        {
+          "summary": "brief one-sentence plan",
+          "tips": [],
+          "recommendedItems": [
+            {"name": "exact item name", "reason": "why + portion in under 12 words", "calories": 000, "portion": "e.g. 1 cup"}
+          ]
+        }
         No markdown in JSON values.
         """
 
         do {
-            let raw = try await callClaude(system: systemPrompt, user: userMessage)
+            let raw = try await callClaude(system: systemPrompt, user: userMessage, maxTokens: 900)
             let cleaned = extractJSON(from: raw)
             if let data = cleaned.data(using: .utf8),
                let json = try? JSONDecoder().decode(RecommendationResponse.self, from: data) {
                 let items = json.recommendedItems.map {
-                    MealSuggestion.RecommendedItem(name: $0.name, reason: $0.reason, calories: $0.calories)
+                    MealSuggestion.RecommendedItem(name: $0.name, reason: $0.reason, calories: $0.calories, portion: $0.portion ?? "1 serving")
                 }
                 suggestion = MealSuggestion(summary: json.summary, tips: [], recommendedItems: items)
             } else {
@@ -167,7 +203,7 @@ class AIService: ObservableObject {
 
     // MARK: - Private helpers
 
-    private func callClaude(system: String, user: String) async throws -> String {
+    private func callClaude(system: String, user: String, maxTokens: Int = 600) async throws -> String {
         let url = URL(string: "https://api.anthropic.com/v1/messages")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -179,7 +215,7 @@ class AIService: ObservableObject {
 
         let body: [String: Any] = [
             "model": "claude-haiku-4-5-20251001",
-            "max_tokens": 1024,
+            "max_tokens": maxTokens,
             "system": system,
             "messages": [["role": "user", "content": user]]
         ]
@@ -191,7 +227,8 @@ class AIService: ObservableObject {
         }
         if http.statusCode != 200 {
             let body = String(data: data, encoding: .utf8) ?? "unknown error"
-            throw NSError(domain: "AIService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: "API error \(http.statusCode): \(body)"])
+            throw NSError(domain: "AIService", code: http.statusCode,
+                          userInfo: [NSLocalizedDescriptionKey: "API error \(http.statusCode): \(body)"])
         }
 
         struct ClaudeResponse: Codable {
@@ -202,7 +239,6 @@ class AIService: ObservableObject {
         return decoded.content.first?.text ?? ""
     }
 
-    /// Strips markdown code fences if Claude wraps JSON in ```json ... ```
     private func extractJSON(from text: String) -> String {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.hasPrefix("```") {
@@ -215,11 +251,6 @@ class AIService: ObservableObject {
 
     // MARK: - Codable response models
 
-    private struct SummaryResponse: Codable {
-        let summary: String
-        let tips: [String]
-    }
-
     private struct RecommendationResponse: Codable {
         let summary: String
         let tips: [String]
@@ -228,6 +259,7 @@ class AIService: ObservableObject {
             let name: String
             let reason: String
             let calories: Int
+            let portion: String?
         }
     }
 }

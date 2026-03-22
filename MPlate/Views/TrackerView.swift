@@ -19,8 +19,31 @@ struct Tracker: SwiftUI.View {
 
     @AppStorage("selectedDiningHall") private var selectedDiningHall: String = "Mosher Jordan Dining Hall"
     @State private var showHallPickerSheet = false
+    @State private var trackerMenuItems: [AIMenuItem] = []
 
     @StateObject private var aiService = AIService()
+
+    private func buildMenuItems(from menu: Menu?) -> [AIMenuItem] {
+        guard let meals = menu?.meal else { return [] }
+        var items: [AIMenuItem] = []
+        for meal in meals {
+            if let courses = meal.course?.courseitem {
+                for course in courses {
+                    for item in course.menuitem.item {
+                        if let name = item.name, let n = item.itemsize?.nutrition {
+                            let cal  = Int(n.kcal?.replacingOccurrences(of: "kcal", with: "").trimmingCharacters(in: .whitespaces) ?? "0") ?? 0
+                            let pro  = Int(n.pro?.replacingOccurrences(of: "gm", with: "").trimmingCharacters(in: .whitespaces) ?? "0") ?? 0
+                            let fat  = Int(n.fat?.replacingOccurrences(of: "gm", with: "").trimmingCharacters(in: .whitespaces) ?? "0") ?? 0
+                            let carb = Int(n.cho?.replacingOccurrences(of: "gm", with: "").trimmingCharacters(in: .whitespaces) ?? "0") ?? 0
+                            let serving = item.itemsize?.serving_size ?? "1 serving"
+                            items.append(AIMenuItem(name: name, kcal: cal, protein: pro, fat: fat, carbs: carb, serving: serving))
+                        }
+                    }
+                }
+            }
+        }
+        return items
+    }
 
     private func recalculateTotals() {
         totalCalories = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "kcal")
@@ -162,12 +185,14 @@ struct Tracker: SwiftUI.View {
                         Spacer()
                         Button {
                             Task {
-                                await aiService.getDailySummary(
+                                await aiService.getTrackerSuggestions(
                                     totalCalories: totalCalories,
                                     totalProtein: totalProtein,
                                     totalFat: totalFat,
                                     totalCarbs: totalCarbs,
-                                    calorieGoal: Int(CalorieGoal)
+                                    calorieGoal: Int(CalorieGoal),
+                                    diningHall: selectedDiningHall,
+                                    menuItems: trackerMenuItems
                                 )
                             }
                         } label: {
@@ -193,10 +218,28 @@ struct Tracker: SwiftUI.View {
                             .foregroundStyle(Color.secondary)
                         ForEach(s.tips, id: \.self) { tip in
                             HStack(alignment: .top, spacing: 6) {
-                                Text("•")
-                                    .foregroundStyle(Color.mBlue)
-                                Text(tip)
-                                    .font(.caption)
+                                Text("•").foregroundStyle(Color.mBlue)
+                                Text(tip).font(.caption)
+                            }
+                        }
+                        if !s.recommendedItems.isEmpty {
+                            Divider().padding(.vertical, 2)
+                            ForEach(s.recommendedItems, id: \.name) { item in
+                                HStack(alignment: .top, spacing: 8) {
+                                    VStack(alignment: .leading, spacing: 1) {
+                                        Text(item.name)
+                                            .font(.caption)
+                                            .fontWeight(.semibold)
+                                        Text("\(item.portion) · \(item.calories) cal")
+                                            .font(.caption2)
+                                            .foregroundStyle(Color.mBlue)
+                                        Text(item.reason)
+                                            .font(.caption2)
+                                            .foregroundStyle(Color.secondary)
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.vertical, 2)
                             }
                         }
                     }
@@ -390,6 +433,13 @@ struct Tracker: SwiftUI.View {
                 DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Other") { items in otherItems = items }
                 recalculateTotals()
                 CalorieGoal = DatabaseManager.getCurrentCalorieGoal()
+                // Load menu items for AI suggestions (uses cache after first load)
+                MenuService.fetchMenu(diningHall: selectedDiningHall) { menu, _ in
+                    var items = buildMenuItems(from: menu)
+                    let otherMenu = MenuService.loadOtherMenu(diningHall: selectedDiningHall)
+                    items += buildMenuItems(from: otherMenu)
+                    trackerMenuItems = items
+                }
             }
             Spacer()
         }
