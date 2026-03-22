@@ -771,7 +771,7 @@ struct Custom: View {
                                                 Text(q).tag(q)
                                             }
                                         }
-                                        .accentColor(Color.black)
+                                        .accentColor(Color.primary)
                                     }
 
                                     Toggle(isOn: Binding(

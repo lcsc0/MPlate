@@ -379,7 +379,7 @@ struct Homepage: SwiftUI.View {
                                 .padding(5)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.black, lineWidth: 0.5)
+                                        .stroke(Color.primary.opacity(0.3), lineWidth: 0.5)
                                 )
                                     
                                     
@@ -865,7 +865,7 @@ struct Homepage: SwiftUI.View {
                             
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 0.5)
+                                    .stroke(Color.primary.opacity(0.3), lineWidth: 0.5)
                             )
                             
                             

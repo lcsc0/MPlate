@@ -44,6 +44,18 @@ struct Selector: View {
     @State private var remainingCalories: Int = 0
     @State private var remainingProtein: Int = 0
     @State private var weightGoal: String = "maintain"
+    @State private var customItems: [CustomItemRow] = []
+    @State private var selectedCustomItemIds: Set<Int> = []
+
+    struct CustomItemRow {
+        let id: Int
+        let name: String
+        let kcal: String
+        let pro: String
+        let fat: String
+        let cho: String
+        let serving: String
+    }
 
 
 
@@ -87,6 +99,27 @@ struct Selector: View {
     }
 
     // Fetch remaining calories + protein from today's logged meals
+    func loadCustomItems() {
+        do {
+            customItems = try dbQueue.read { db in
+                let rows = try Row.fetchAll(db, sql: "SELECT id, name, kcal, pro, fat, cho, serving FROM customitems3 ORDER BY created_at DESC")
+                return rows.map { row in
+                    CustomItemRow(
+                        id: row["id"] as! Int,
+                        name: row["name"] as? String ?? "",
+                        kcal: row["kcal"] as? String ?? "0kcal",
+                        pro: row["pro"] as? String ?? "0gm",
+                        fat: row["fat"] as? String ?? "0gm",
+                        cho: row["cho"] as? String ?? "0gm",
+                        serving: row["serving"] as? String ?? "N/A"
+                    )
+                }
+            }
+        } catch {
+            print("Error loading custom items: \(error)")
+        }
+    }
+
     func fetchRemainingBudget() {
         do {
             let today = getCurrentDate()
@@ -286,63 +319,37 @@ struct Selector: View {
     }
     
     func saveSelectedItemsToDatabase() {
-        guard let meals = menu?.meal else { return }
-        //print(getCurrentDate())
-        print(selectedItems)
-        
-        // Find or create the meal in the database and get its ID
         do {
-            try DatabaseManager.addMeal(date: getCurrentDate(), mealName: mealAddingTo) // Example date, use current date dynamically if needed.
-            
-            // Get the last inserted meal ID (or you might need to fetch it based on date and meal name)
+            try DatabaseManager.addMeal(date: getCurrentDate(), mealName: mealAddingTo)
+
             let mealID = try dbQueue.read { db in
                 try Int.fetchOne(db, sql: "SELECT id FROM meals WHERE date = ? AND mealname = ?", arguments: [getCurrentDate(), mealAddingTo])
             }
-            
-            
-            guard let validMealID = mealID else { return }
-            
-            var addedItems = Set<String>()  // A Set to track added items (by their name)
 
-            for selectedItem in selectedItems {
-                //print(selectedItem)
-                
-                for meal in meals {
-                    //print(meal)
-                    if let courses = meal.course?.courseitem {
-                        for course in courses {
-                            
-                            // Find the first matching item
-                            if let item = course.menuitem.item.first(where: { $0.name == selectedItem }) {
-                                
-                                // Check if this item has already been added
-                                if addedItems.contains(selectedItem) {
-                                    continue  // Skip if already added
-                                }
-                                
-                                // Mark this item as added
-                                addedItems.insert(selectedItem)
-                                
-                                // If nutrition exists, add the food item to the database
-                                if let nutrition = item.itemsize?.nutrition {
-                                    let kcal = nutrition.kcal ?? "0kcal"
-                                    let pro = nutrition.pro ?? "0gm"
-                                    let fat = nutrition.fat ?? "0gm"
-                                    let cho = nutrition.cho ?? "0gm"
-                                    let serving = item.itemsize?.serving_size ?? "N/A"
-                                    let qty = quantities[selectedItem] ?? "1"
-                                    
-                                    try DatabaseManager.addFoodItem(
-                                        meal_id: validMealID,
-                                        name: selectedItem,
-                                        kcal: kcal,
-                                        pro: pro,
-                                        fat: fat,
-                                        cho: cho,
-                                        serving: serving,
-                                        qty: qty
-                                        
-                                    )
+            guard let validMealID = mealID else { return }
+
+            // Save selected menu items
+            if let meals = menu?.meal {
+                var addedItems = Set<String>()
+                for selectedItem in selectedItems {
+                    for meal in meals {
+                        if let courses = meal.course?.courseitem {
+                            for course in courses {
+                                if let item = course.menuitem.item.first(where: { $0.name == selectedItem }) {
+                                    if addedItems.contains(selectedItem) { continue }
+                                    addedItems.insert(selectedItem)
+                                    if let nutrition = item.itemsize?.nutrition {
+                                        try DatabaseManager.addFoodItem(
+                                            meal_id: validMealID,
+                                            name: selectedItem,
+                                            kcal: nutrition.kcal ?? "0kcal",
+                                            pro: nutrition.pro ?? "0gm",
+                                            fat: nutrition.fat ?? "0gm",
+                                            cho: nutrition.cho ?? "0gm",
+                                            serving: item.itemsize?.serving_size ?? "N/A",
+                                            qty: quantities[selectedItem] ?? "1"
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -350,7 +357,22 @@ struct Selector: View {
                 }
             }
 
-            
+            // Save selected custom items
+            for itemId in selectedCustomItemIds {
+                if let item = customItems.first(where: { $0.id == itemId }) {
+                    try DatabaseManager.addFoodItem(
+                        meal_id: validMealID,
+                        name: item.name,
+                        kcal: item.kcal,
+                        pro: item.pro,
+                        fat: item.fat,
+                        cho: item.cho,
+                        serving: item.serving,
+                        qty: quantities["custom_\(item.id)"] ?? "1"
+                    )
+                }
+            }
+
             print("Items successfully added to the database.")
         } catch {
             print("Failed to add items: \(error)")
@@ -516,7 +538,7 @@ struct Selector: View {
                             preLoaded = false
                             fetchData()
                         }
-                    } .accentColor(Color.black)
+                    } .accentColor(Color.primary)
                     .padding(.leading,2)
 
                     Spacer()
@@ -566,15 +588,15 @@ struct Selector: View {
                     Text("Old menus loaded. Connect to U-M Wifi to use Updated Menus.")
                         .foregroundStyle(Color.gray)
                         .padding(.horizontal, 8)
-                    
-                        
-                        
-                        
+
+
+
+
                 }
                 ScrollView{
                     if let meals = menu?.meal{
                         if hallChanging == false{
-                            ForEach(meals, id: \.name) { meal in
+                            ForEach(meals.filter { $0.name?.lowercased() == mealAddingTo.lowercased() }, id: \.name) { meal in
                                 
                                 if meal.course != nil {
                                     
@@ -650,7 +672,7 @@ struct Selector: View {
                                                                 
                                                             }
                                                             
-                                                            .accentColor(Color.black)
+                                                            .accentColor(Color.primary)
                                                         }
 
 
@@ -696,6 +718,66 @@ struct Selector: View {
                             
                             if !noMenuItems{
                                 SpecialViewer(mealAddingTo: mealAddingTo, selectedItems: $selectedItems, addToMealButtonPressed: $addButtonPressed)
+
+                                // Custom foods section
+                                if !customItems.isEmpty {
+                                    Text("Custom")
+                                        .font(.largeTitle)
+                                        .bold()
+                                        .foregroundStyle(Color.white)
+                                        .frame(width: 340, height: 60)
+                                        .padding(.horizontal)
+                                        .background(Color(.mBlue))
+                                        .cornerRadius(13)
+                                        .padding(.bottom, 8)
+
+                                    ForEach(customItems, id: \.id) { item in
+                                        VStack {
+                                            HStack {
+                                                Text(item.name)
+                                                    .font(.system(size: 14))
+                                                    .padding(.leading, 15)
+                                                    .fontWeight(.semibold)
+                                                NavigationLink(destination: NutritionViewer(name: item.name, kcal: item.kcal, pro: item.pro, fat: item.fat, cho: item.cho, serving: item.serving)) {
+                                                    Image(systemName: "info.circle")
+                                                        .resizable()
+                                                        .frame(width: 17, height: 17)
+                                                }
+                                                Spacer()
+                                                if selectedCustomItemIds.contains(item.id) {
+                                                    Picker("", selection: Binding(
+                                                        get: { quantities["custom_\(item.id)"] ?? "1" },
+                                                        set: { quantities["custom_\(item.id)"] = $0 }
+                                                    )) {
+                                                        ForEach(["0.5", "1", "2", "3", "4"], id: \.self) { q in
+                                                            Text(q).tag(q)
+                                                        }
+                                                    }
+                                                    .accentColor(Color.primary)
+                                                }
+                                                Toggle(isOn: Binding(
+                                                    get: { selectedCustomItemIds.contains(item.id) },
+                                                    set: { isSelected in
+                                                        if isSelected { selectedCustomItemIds.insert(item.id) }
+                                                        else { selectedCustomItemIds.remove(item.id) }
+                                                    }
+                                                )) {
+                                                    Image(systemName: selectedCustomItemIds.contains(item.id) ? "checkmark.square.fill" : "square")
+                                                        .foregroundStyle(Color.mBlue)
+                                                        .animation(nil, value: selectedCustomItemIds)
+                                                        .font(.title)
+                                                }
+                                                .sensoryFeedback(.increase, trigger: selectedCustomItemIds)
+                                                .labelsHidden()
+                                                .toggleStyle(.button)
+                                                .padding(.trailing, 15)
+                                                .buttonStyle(.plain)
+                                            }
+                                            Divider()
+                                        }
+                                    }
+                                    .padding(.bottom, 8)
+                                }
                             } else {
                                 Text("No menu items found!")
                                     .foregroundStyle(Color.gray)
@@ -733,6 +815,7 @@ struct Selector: View {
             } .onAppear{
                 fetchData()
                 fetchRemainingBudget()
+                loadCustomItems()
             }
 
         }.navigationBarTitleDisplayMode(.inline)
@@ -1200,7 +1283,7 @@ struct SpecialViewer: View {
                                                                 
                                                             }
                                                             
-                                                            .accentColor(Color.black)
+                                                            .accentColor(Color.primary)
                                                         }
 
 

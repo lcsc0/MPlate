@@ -25,6 +25,8 @@
 		31937F232D3191DF00397676 /* East_Quad_Dining_Hall.json in Resources */ = {isa = PBXBuildFile; fileRef = 31937F1B2D3191DF00397676 /* East_Quad_Dining_Hall.json */; };
 		31937F242D3191DF00397676 /* North_Quad_Dining_Hall.json in Resources */ = {isa = PBXBuildFile; fileRef = 31937F1D2D3191DF00397676 /* North_Quad_Dining_Hall.json */; };
 		31937F252D3191DF00397676 /* Twigs_at_Oxford.json in Resources */ = {isa = PBXBuildFile; fileRef = 31937F1F2D3191DF00397676 /* Twigs_at_Oxford.json */; };
+		31AA10052D5A00000036C267 /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31AA10062D5A00000036C267 /* AIService.swift */; };
+		31AA10072D5A00000036C267 /* FoodSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31AA10082D5A00000036C267 /* FoodSearchService.swift */; };
 		31EE8D482D401C3F0036C267 /* Custom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31EE8D472D401C3F0036C267 /* Custom.swift */; };
 		8B4E804F0AE31DF616F96C47 /* Pods_MPlate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79DD65AEBAFECC54C2087AF2 /* Pods_MPlate.framework */; };
 /* End PBXBuildFile section */
@@ -50,6 +52,8 @@
 		31937F1E2D3191DF00397676 /* South_Quad_Dining_Hall.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = South_Quad_Dining_Hall.json; sourceTree = "<group>"; };
 		31937F1F2D3191DF00397676 /* Twigs_at_Oxford.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Twigs_at_Oxford.json; sourceTree = "<group>"; };
 		31AA10042CF4567C004C3380 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		31AA10062D5A00000036C267 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
+		31AA10082D5A00000036C267 /* FoodSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodSearchService.swift; sourceTree = "<group>"; };
 		31EE8D472D401C3F0036C267 /* Custom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Custom.swift; sourceTree = "<group>"; };
 		79DD65AEBAFECC54C2087AF2 /* Pods_MPlate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MPlate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		99A7ADAAAC611665522474C5 /* Pods-MPlate.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MPlate.release.xcconfig"; path = "Target Support Files/Pods-MPlate/Pods-MPlate.release.xcconfig"; sourceTree = "<group>"; };
@@ -95,6 +99,8 @@
 				3172A1342CBC4CD400BDD5BC /* ContentView.swift */,
 				3145F1BC2CC3500500946A34 /* Selector.swift */,
 				31EE8D472D401C3F0036C267 /* Custom.swift */,
+				31AA10062D5A00000036C267 /* AIService.swift */,
+				31AA10082D5A00000036C267 /* FoodSearchService.swift */,
 				3145F1BA2CBF4B6E00946A34 /* JsonTesting.swift */,
 				3172A1402CBC51C600BDD5BC /* Setup.swift */,
 				31937F162D3190ED00397676 /* Markley_Dining_Hall.json */,
@@ -168,7 +174,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1540;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					3172A12E2CBC4CD400BDD5BC = {
 						CreatedOnToolsVersion = 15.4;
@@ -246,9 +252,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-MPlate/Pods-MPlate-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-MPlate/Pods-MPlate-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -263,6 +273,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				31EE8D482D401C3F0036C267 /* Custom.swift in Sources */,
+				31AA10052D5A00000036C267 /* AIService.swift in Sources */,
+				31AA10072D5A00000036C267 /* FoodSearchService.swift in Sources */,
 				3172A1352CBC4CD400BDD5BC /* ContentView.swift in Sources */,
 				3145F1BB2CBF4B6E00946A34 /* JsonTesting.swift in Sources */,
 				3145F1BD2CC3500500946A34 /* Selector.swift in Sources */,
@@ -310,6 +322,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = Q8344KAJF2;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -333,6 +346,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -373,6 +387,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Q8344KAJF2;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -389,6 +404,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -403,7 +419,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MPlate/Preview Content\"";
-				DEVELOPMENT_TEAM = Q8344KAJF2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MPlate/Info.plist;
@@ -440,7 +455,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MPlate/Preview Content\"";
-				DEVELOPMENT_TEAM = Q8344KAJF2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MPlate/Info.plist;

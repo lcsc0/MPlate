@@ -39,7 +39,7 @@ struct MkcalsApp: App {
     
     private func setupDatabase() {
         do {
-            try DatabaseManager.setup(for: UIApplication.shared)
+            try DatabaseManager.setup()
             print("Database setup successfully")
         } catch {
             print("Error setting up database: \(error)")
@@ -67,7 +67,7 @@ var dbQueue: DatabaseQueue!
 
 class DatabaseManager {
 
-    static func setup(for application: UIApplication) throws {
+    static func setup() throws {
         let databaseURL = try FileManager.default
             .url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             .appendingPathComponent("datab14.sqlite")
