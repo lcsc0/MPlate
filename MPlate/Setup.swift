@@ -1,317 +1,318 @@
 //
 //  Setup.swift
-//  Mkcals
-//
-//  Created by Grant Patterson on 10/13/24.
+//  MPlate
 //
 
 import SwiftUI
+import GRDB
+
+// MARK: - Activity Level
+
+private enum ActivityLevel: String, CaseIterable, Identifiable {
+    case sedentary   = "Sedentary"
+    case light       = "Light"
+    case moderate    = "Moderate"
+    case active      = "Active"
+    case extraActive = "Extra Active"
+
+    var id: String { rawValue }
+
+    var factor: Double {
+        switch self {
+        case .sedentary:   return 1.2
+        case .light:       return 1.375
+        case .moderate:    return 1.55
+        case .active:      return 1.725
+        case .extraActive: return 1.9
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .sedentary:   return "Little or no exercise, desk job"
+        case .light:       return "Light exercise 1–3 days/week"
+        case .moderate:    return "Moderate exercise 3–5 days/week"
+        case .active:      return "Hard exercise 6–7 days/week"
+        case .extraActive: return "Very hard exercise or physical job"
+        }
+    }
+}
+
+// MARK: - Goal Row Model
+
+private struct GoalRow: Identifiable {
+    let id = UUID()
+    let label: String
+    let subtitle: String
+    let offset: Int        // calories relative to TDEE
+    let weightPlan: String // "gain", "maintain", or "lose"
+
+    static let all: [GoalRow] = [
+        GoalRow(label: "Extreme Weight Gain", subtitle: "+2 lb / week",   offset: +1000, weightPlan: "gain"),
+        GoalRow(label: "Weight Gain",         subtitle: "+1 lb / week",   offset:  +500, weightPlan: "gain"),
+        GoalRow(label: "Mild Weight Gain",    subtitle: "+0.5 lb / week", offset:  +250, weightPlan: "gain"),
+        GoalRow(label: "Maintain Weight",     subtitle: "0 lb / week",    offset:     0, weightPlan: "maintain"),
+        GoalRow(label: "Mild Weight Loss",    subtitle: "-0.5 lb / week", offset:  -250, weightPlan: "lose"),
+        GoalRow(label: "Weight Loss",         subtitle: "-1 lb / week",   offset:  -500, weightPlan: "lose"),
+        GoalRow(label: "Extreme Weight Loss", subtitle: "-2 lb / week",   offset: -1000, weightPlan: "lose"),
+    ]
+
+    var rowColor: Color {
+        switch weightPlan {
+        case "gain":
+            switch offset {
+            case 1000: return Color.mBlue.opacity(0.90)
+            case 500:  return Color.mBlue.opacity(0.65)
+            default:   return Color.mBlue.opacity(0.40)
+            }
+        case "lose":
+            switch offset {
+            case -1000: return Color(red: 0.05, green: 0.50, blue: 0.20)
+            case -500:  return Color(red: 0.15, green: 0.62, blue: 0.30)
+            default:    return Color(red: 0.30, green: 0.75, blue: 0.45)
+            }
+        default:
+            return Color(.systemGray3)
+        }
+    }
+
+    var textColor: Color {
+        weightPlan == "maintain" ? .primary : .white
+    }
+}
+
+// MARK: - Screen 1: TDEE Calculator
 
 struct Setup: View {
-    
-    
-    func saveWeightPlan(plan: String) throws {
-        try dbQueue.write { db in
-            try db.execute(
-                sql: "UPDATE user SET weightplan = ? WHERE id = 1",
-                arguments: [plan]
-            
-            )
-            
-        }
-    }
-    
+    @State private var isMale: Bool = true
+    @State private var ageInput: String = ""
+    @State private var heightFeetInput: String = ""
+    @State private var heightInchesInput: String = ""
+    @State private var weightInput: String = ""
+    @State private var activityLevel: ActivityLevel = .moderate
+    @State private var bodyFatInput: String = ""
+    @State private var navigateToResults: Bool = false
+    @State private var calculatedTDEE: Int = 0
+
     var body: some View {
-        NavigationStack{
-            VStack {
-                
-                VStack{
-                    
-                    NavigationLink(destination: CalCount()){
-                        HStack{
-                            HStack{
-                                Text("Gain Weight")
-                                    .frame(width: 90.0)
-                                    .padding(10)
-                                
-                                Image(systemName:"arrowshape.up")
-                                    .padding(.trailing, 10.0)
-                                Spacer()
-                                
-                            }
-                            
-                            .frame(width: 150.0, height:80.0)
-                            .background(Color.mmaize)
-                            .foregroundStyle(.black)
-                            .padding(10)
-                            .cornerRadius(40)
-                            Text("Track calories aiming for a calorie surplus.")
-                                .foregroundStyle(Color.white)
-                            Spacer()
-                            
-                            
-                        }
-                        
-                        .frame(width: 370.0, height: 100.0)
-                        .background(Color.mBlue)
-                        .cornerRadius(13)
-                        
-                        
-                        
-                        
-                    }.simultaneousGesture(TapGesture().onEnded {
-                        do {
-                            try saveWeightPlan(plan: "gain")
-                        } catch {
-                            print("error saving: \(error)")
-                        }
-                    })
-                    NavigationLink(destination: CalCount()){
-                        HStack{
-                            HStack{
-                                Text("Maintain Weight")
-                                    .frame(width: 90.0)
-                                
-                                    .padding(10)
-                                
-                                Image(systemName:"line.3.horizontal")
-                                    .padding(.trailing, 10.0)
-                                Spacer()
-                                
-                            }
-                            
-                            .frame(width: 150.0, height:80.0)
-                            .background(Color.mmaize)
-                            .foregroundStyle(.black)
-                            .padding(10)
-                            .cornerRadius(40)
-                            Text("Track calories aiming for maintenance.")
-                                .foregroundStyle(Color.white)
-                            Spacer()
-                            
-                            
-                        }
-                        
-                        .frame(width: 370.0, height: 100.0)
-                        .background(Color.mBlue)
-                        .cornerRadius(13)
-                        
-                        
-                        
-                        
-                    } .simultaneousGesture(TapGesture().onEnded {
-                        do {
-                            try saveWeightPlan(plan: "maintain")
-                        } catch {
-                            print("error saving")
-                        }
-                    })
-                    NavigationLink(destination: CalCount()){
-                        HStack{
-                            HStack{
-                                Text("Lose Weight")
-                                    .frame(width: 90.0)
-                                    .padding(10)
-                                
-                                Image(systemName:"arrowshape.down")
-                                    .padding(.trailing, 10.0)
-                                Spacer()
-                                
-                            }
-                            
-                            .frame(width: 150.0, height:80.0)
-                            .background(Color.mmaize)
-                            .foregroundStyle(.black)
-                            .padding(10)
-                            .cornerRadius(40)
-                            Text("Track calories aiming for a calorie deficit.")
-                                .foregroundStyle(Color.white)
-                            Spacer()
-                            
-                            
-                        }
-                        
-                        .frame(width: 370.0, height: 100.0)
-                        .background(Color.mBlue)
-                        .cornerRadius(13)
-                        
-                        
-                        
-                        
-                    } .simultaneousGesture(TapGesture().onEnded {
-                        do {
-                            try saveWeightPlan(plan: "lose")
-                        } catch {
-                            print("error saving")
-                        }
-                    })
-                    
-                    
-                    
-                }
-                NavigationLink(destination: Unsure()){
-                    HStack{
-                        Image(systemName: "info.circle")
-                        Text("I'm not sure")
-                            .padding(.vertical, 35.0)
+        Form {
+                Section(header: Text("Biological Sex")) {
+                    Picker("Sex", selection: $isMale) {
+                        Text("Male").tag(true)
+                        Text("Female").tag(false)
                     }
-                    
+                    .pickerStyle(.segmented)
                 }
-                
-                NavigationLink(destination:
-                                VStack{
-                    Text("Source: https://www.mayoclinic.org/healthy-lifestyle/weight-loss/in-depth/calories/art-20048065#:~:text=Your%20weight%20is%20a%20balancing,(0.45%20kilogram)%20of%20fat.")
-                    
-                    Text("\n\"Your weight is a balancing act, but the equation is simple. If you eat more calories than you burn, you gain weight. And if you eat fewer calories and burn more calories through physical activity, you lose weight.\"")
-                }.padding()){
-                    Text("Source")
+
+                Section(header: Text("Age")) {
+                    HStack {
+                        TextField("e.g. 20", text: $ageInput)
+                            .keyboardType(.numberPad)
+                        Text("years")
+                            .foregroundStyle(.secondary)
+                    }
                 }
-                
-                
-            }.navigationTitle("What is your goal?")
-                .navigationBarTitleDisplayMode(.large)
-                
-            
-        }
-    }
-}
 
+                Section(header: Text("Height")) {
+                    HStack {
+                        TextField("e.g. 5", text: $heightFeetInput)
+                            .keyboardType(.numberPad)
+                        Text("ft")
+                            .foregroundStyle(.secondary)
+                        Divider()
+                        TextField("e.g. 7", text: $heightInchesInput)
+                            .keyboardType(.numberPad)
+                        Text("in")
+                            .foregroundStyle(.secondary)
+                    }
+                }
 
+                Section(header: Text("Weight")) {
+                    HStack {
+                        TextField("e.g. 155", text: $weightInput)
+                            .keyboardType(.numberPad)
+                        Text("lbs")
+                            .foregroundStyle(.secondary)
+                    }
+                }
 
-struct Unsure: View {
-    var body: some View {
-        NavigationStack {
-            VStack {
-                
-                Text("We reccomend picking Maintain Weight if you're still deciding or if you're just here to track your nutrition. \n\n\nThis can always be changed in settings.")
-                    .multilineTextAlignment(.leading)
-                    .padding(25)
-                    .foregroundStyle(Color.mBlue)
+                Section(header: Text("Activity Level")) {
+                    Picker("Activity", selection: $activityLevel) {
+                        ForEach(ActivityLevel.allCases) { level in
+                            Text(level.rawValue).tag(level)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    Text(activityLevel.description)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
 
-                Spacer()
+                Section(
+                    header: Text("Body Fat % (Optional)"),
+                    footer: Text("If provided, uses the more accurate Katch-McArdle formula.")
+                ) {
+                    TextField("e.g. 18", text: $bodyFatInput)
+                        .keyboardType(.decimalPad)
+                }
+
+                Section {
+                    Button(action: {
+                        calculatedTDEE = computeTDEE()
+                        navigateToResults = true
+                    }) {
+                        HStack {
+                            Spacer()
+                            Text("Calculate")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                                .padding(.vertical, 8)
+                            Spacer()
+                        }
+                        .background(Color.mBlue)
+                        .cornerRadius(10)
+                    }
+                    .listRowInsets(EdgeInsets())
+                }
             }
-        }.navigationTitle("Don't worry!")
-            
-        
-        
-    }
-}
-
-
-struct CalCount: View {
-    @State private var number: Int = 2000
-    
-    func saveCalorieGoal(goal: Int) throws {
-        try dbQueue.write { db in
-            try db.execute(
-                sql: "UPDATE user SET caloriegoal = ?, firstSetupComplete = ? WHERE id = 1",
-                arguments: [goal, true]
-            
-            )
-            
+        .navigationTitle("TDEE Calculator")
+        .navigationBarTitleDisplayMode(.large)
+        .navigationDestination(isPresented: $navigateToResults) {
+            TDEEResults(tdee: calculatedTDEE)
         }
     }
-    
-    
-    let kcalRange = Array(stride(from: 0, through: 10000, by: 50))
-    
-    var body: some View {
-        NavigationStack {
-            VStack {
-                Picker("kcals/day", selection: $number) {
-                    ForEach(kcalRange, id: \.self) { value in
-                        Text("\(value)")
-                    }
-                }.pickerStyle(.wheel)
-                    
-                
-                
-                NavigationLink(destination: Homepage()){
-                    Text("Looks good!")
-                        .font(.title2)
-                        .foregroundStyle(Color.white)
-                        
-                        .frame(width: 200.0, height: 70.0)
-                            .background(Color.mBlue)
-                            .cornerRadius(13)
-                            .padding(5)
-                } .simultaneousGesture(TapGesture().onEnded {
-                    do {
-                        try saveCalorieGoal(goal: number)
-                    } catch {
-                        print("error saving: \(error)")
-                    }
-                })
-                
-                NavigationLink(destination: CalHelp()){
-                    HStack{
-                        Image(systemName: "info.circle")
-                        Text("I'm not sure")
-                            .padding(.vertical, 35.0)
-                    }
-                    
-                    
-                }
-                
-            }
-        }.navigationTitle("Calorie goal/day?")
 
-            
-            
-        
-        
+    private func computeTDEE() -> Int {
+        let weightKg = (Double(weightInput) ?? 155) * 0.453592
+        let feet = Double(heightFeetInput) ?? 5
+        let inches = Double(heightInchesInput) ?? 7
+        let heightCm = (feet * 12.0 + inches) * 2.54
+        let age = Double(ageInput) ?? 20
+        let bmr: Double
+
+        if let bf = Double(bodyFatInput.trimmingCharacters(in: .whitespaces)),
+           bf > 0, bf < 100 {
+            let lbm = weightKg * (1.0 - bf / 100.0)
+            bmr = 370.0 + 21.6 * lbm
+        } else {
+            if isMale {
+                bmr = 10.0 * weightKg + 6.25 * heightCm - 5.0 * age + 5.0
+            } else {
+                bmr = 10.0 * weightKg + 6.25 * heightCm - 5.0 * age - 161.0
+            }
+        }
+
+        return Int((bmr * activityLevel.factor).rounded())
     }
 }
 
-struct CalHelp: View {
-    @State private var weight: Int = 140;
-    @State var showMaint = false;
-    let Range = Array(stride(from: 0, through: 1000, by: 5))
+// MARK: - Screen 2: Goal Picker
+
+private struct TDEEResults: View {
+    let tdee: Int
+    @State private var navigateToHomepage: Bool = false
+
     var body: some View {
-        NavigationStack {
-            VStack {
-                
-                Text("Enter your weight to help calculate your calorie goal. (not saved anywhere!)")
-                    .foregroundStyle(Color.mBlue)
-                    .padding()
-                Picker("kcals/day", selection: $weight) {
-                    ForEach(Range, id: \.self) { value in
-                        Text("\(value)")
-                    }
-                }.pickerStyle(.wheel)
-                
-                Button("Calculate") {
-                    showMaint = true;
-                    
-                }
-                if showMaint{
-                    Text("If you are moderately active, your maintenance calories are likely around \(weight*15).\n(Bodyweight * 15)")
-                        .padding()
+        ScrollView {
+            VStack(spacing: 0) {
+
+                // TDEE banner
+                VStack(spacing: 6) {
+                    Text("Your TDEE")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                    Text(formatted(tdee))
+                        .font(.system(size: 56, weight: .bold, design: .rounded))
                         .foregroundStyle(Color.mBlue)
-                    
-                    
+                    Text("calories / day to maintain your weight")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
                 }
-                
-                VStack {
-                    Text("Source: https://www.health.harvard.edu/staying-healthy/calorie-counting-made-easy")
-                        .font(.system(size: 9))
-                        .padding(.horizontal)
-                        .padding(.top)
-                    Text("\"First, multiply your current weight by 15 — that's roughly the number of calories per pound of body weight needed to maintain your current weight if you are moderately active. \"")
-                        .font(.system(size: 9))
-                        .padding(.horizontal)
-                        .padding(.bottom)
+                .padding(.vertical, 28)
+                .padding(.horizontal)
 
+                // Goal rows
+                VStack(spacing: 10) {
+                    ForEach(GoalRow.all) { row in
+                        let calories = tdee + row.offset
+                        let pct = tdee > 0
+                            ? Int((Double(calories) / Double(tdee) * 100).rounded())
+                            : 100
+
+                        Button {
+                            saveGoal(calories: calories, plan: row.weightPlan)
+                            navigateToHomepage = true
+                        } label: {
+                            HStack(spacing: 0) {
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(row.label)
+                                        .font(.headline)
+                                        .foregroundStyle(row.textColor)
+                                    Text(row.subtitle)
+                                        .font(.subheadline)
+                                        .foregroundStyle(row.textColor.opacity(0.80))
+                                }
+                                .padding(.leading, 16)
+                                .padding(.vertical, 14)
+
+                                Spacer()
+
+                                VStack(alignment: .trailing, spacing: 2) {
+                                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                        Text(formatted(calories))
+                                            .font(.title2.weight(.bold))
+                                            .foregroundStyle(row.textColor)
+                                        Text("\(pct)%")
+                                            .font(.caption)
+                                            .foregroundStyle(row.textColor.opacity(0.80))
+                                    }
+                                    Text("Calories/day")
+                                        .font(.caption)
+                                        .foregroundStyle(row.textColor.opacity(0.80))
+                                }
+                                .padding(.trailing, 16)
+                                .padding(.vertical, 14)
+                            }
+                            .background(row.rowColor)
+                            .cornerRadius(12)
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 16)
+                    }
                 }
-                
-                Spacer()
+                .padding(.bottom, 32)
             }
-        }.navigationTitle("Calorie Goal Help")
-            
-        
-        
+        }
+        .navigationTitle("Choose Your Goal")
+        .navigationBarTitleDisplayMode(.large)
+        .navigationDestination(isPresented: $navigateToHomepage) {
+            Homepage()
+                .navigationBarBackButtonHidden(true)
+        }
+    }
+
+    private func saveGoal(calories: Int, plan: String) {
+        do {
+            try dbQueue.write { db in
+                try db.execute(
+                    sql: "UPDATE user SET caloriegoal = ?, weightplan = ?, firstSetupComplete = ? WHERE id = 1",
+                    arguments: [calories, plan, true]
+                )
+            }
+        } catch {
+            print("TDEEResults saveGoal error: \(error)")
+        }
+    }
+
+    private func formatted(_ n: Int) -> String {
+        let f = NumberFormatter()
+        f.numberStyle = .decimal
+        return f.string(from: NSNumber(value: n)) ?? "\(n)"
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     Setup()
