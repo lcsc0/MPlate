@@ -3,9 +3,41 @@
 //  MPlate
 //
 //  Handles fetching dining hall menus from the U-M API and bundled JSON fallbacks.
+//  Menus are cached in-memory per dining hall per day to avoid redundant network calls.
 //
 
 import Foundation
+
+// MARK: - In-memory daily cache
+
+final class MenuCache {
+    static let shared = MenuCache()
+    private init() {}
+
+    private var store: [String: Menu] = [:]
+
+    private func key(diningHall: String, date: String) -> String {
+        "\(diningHall)|\(date)"
+    }
+
+    func get(diningHall: String) -> Menu? {
+        let today = currentDateString()
+        return store[key(diningHall: diningHall, date: today)]
+    }
+
+    func set(_ menu: Menu, for diningHall: String) {
+        let today = currentDateString()
+        store[key(diningHall: diningHall, date: today)] = menu
+    }
+
+    private func currentDateString() -> String {
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyy-MM-dd"
+        return fmt.string(from: Date())
+    }
+}
+
+// MARK: - URL builder
 
 class APIHandling {
     static func getURL(diningHall: String) -> String {
@@ -13,41 +45,46 @@ class APIHandling {
     }
 }
 
+// MARK: - Menu service
+
 class MenuService {
 
     /// Fetch live menu from U-M API, falling back to bundled JSON on error.
+    /// Results are cached per dining hall per day — the network is only hit once daily.
     static func fetchMenu(diningHall: String, completion: @escaping (Menu?, Bool) -> Void) {
-        let urlString = APIHandling.getURL(diningHall: diningHall)
+        // Return cached result if available for today
+        if let cached = MenuCache.shared.get(diningHall: diningHall) {
+            DispatchQueue.main.async { completion(cached, false) }
+            return
+        }
 
+        let urlString = APIHandling.getURL(diningHall: diningHall)
         guard let url = URL(string: urlString) else {
             completion(nil, false)
             return
         }
 
-        let session = URLSession.shared
-        let dataTask = session.dataTask(with: url) { (data, response, error) in
+        URLSession.shared.dataTask(with: url) { data, _, error in
             if error == nil, let data = data {
-                let decoder = JSONDecoder()
                 do {
-                    let itemFeed = try decoder.decode(apiCalled.self, from: data)
-                    DispatchQueue.main.async {
-                        completion(itemFeed.menu, false)
+                    let itemFeed = try JSONDecoder().decode(apiCalled.self, from: data)
+                    if let menu = itemFeed.menu {
+                        MenuCache.shared.set(menu, for: diningHall)
+                        DispatchQueue.main.async { completion(menu, false) }
+                    } else {
+                        let demo = loadDemoMenu(diningHall: diningHall)
+                        DispatchQueue.main.async { completion(demo, true) }
                     }
                 } catch {
-                    print("error: \(error)")
-                    let demoMenu = loadDemoMenu(diningHall: diningHall)
-                    DispatchQueue.main.async {
-                        completion(demoMenu, true)
-                    }
+                    print("Menu decode error: \(error)")
+                    let demo = loadDemoMenu(diningHall: diningHall)
+                    DispatchQueue.main.async { completion(demo, true) }
                 }
             } else {
-                let demoMenu = loadDemoMenu(diningHall: diningHall)
-                DispatchQueue.main.async {
-                    completion(demoMenu, true)
-                }
+                let demo = loadDemoMenu(diningHall: diningHall)
+                DispatchQueue.main.async { completion(demo, true) }
             }
-        }
-        dataTask.resume()
+        }.resume()
     }
 
     /// Load bundled JSON menu for a dining hall.
@@ -56,11 +93,9 @@ class MenuService {
             print("Demo JSON file not found.")
             return nil
         }
-
         do {
             let data = try Data(contentsOf: URL(fileURLWithPath: path))
-            let decoder = JSONDecoder()
-            let itemFeed = try decoder.decode(apiCalled.self, from: data)
+            let itemFeed = try JSONDecoder().decode(apiCalled.self, from: data)
             print("Demo data loaded successfully.")
             return itemFeed.menu
         } catch {
@@ -76,12 +111,10 @@ class MenuService {
             print("Other menu JSON not found for \(diningHall)")
             return nil
         }
-
         do {
             let data = try Data(contentsOf: URL(fileURLWithPath: path))
-            let decoder = JSONDecoder()
-            let itemFeed = try decoder.decode(apiCalled.self, from: data)
-            print("Other menu loaded successfully for \(diningHall).")
+            let itemFeed = try JSONDecoder().decode(apiCalled.self, from: data)
+            print("Other menu loaded for \(diningHall).")
             return itemFeed.menu
         } catch {
             print("Error loading other menu: \(error)")
@@ -95,11 +128,9 @@ class MenuService {
             print("Special JSON file not found.")
             return nil
         }
-
         do {
             let data = try Data(contentsOf: URL(fileURLWithPath: path))
-            let decoder = JSONDecoder()
-            let itemFeed = try decoder.decode(apiCalled.self, from: data)
+            let itemFeed = try JSONDecoder().decode(apiCalled.self, from: data)
             print("Special data loaded successfully.")
             return itemFeed.menu
         } catch {

@@ -38,18 +38,21 @@ struct Selector: View {
     private func updateSelectedDiningHallCache() {}
 
     var availableMenuItems: [AIMenuItem] {
-        guard let meals = menu?.meal else { return [] }
         var items: [AIMenuItem] = []
-        for meal in meals {
-            if let courses = meal.course?.courseitem {
-                for course in courses {
-                    for item in course.menuitem.item {
-                        if let itemName = item.name, let nutrition = item.itemsize?.nutrition {
-                            let cal  = Int(nutrition.kcal?.replacingOccurrences(of: "kcal", with: "") ?? "0") ?? 0
-                            let pro  = Int(nutrition.pro?.replacingOccurrences(of: "gm", with: "").trimmingCharacters(in: .whitespaces) ?? "0") ?? 0
-                            let fat  = Int(nutrition.fat?.replacingOccurrences(of: "gm", with: "").trimmingCharacters(in: .whitespaces) ?? "0") ?? 0
-                            let carb = Int(nutrition.cho?.replacingOccurrences(of: "gm", with: "").trimmingCharacters(in: .whitespaces) ?? "0") ?? 0
-                            items.append(AIMenuItem(name: itemName, kcal: cal, protein: pro, fat: fat, carbs: carb))
+        for source in [menu, otherMenu] {
+            guard let meals = source?.meal else { continue }
+            for meal in meals {
+                if let courses = meal.course?.courseitem {
+                    for course in courses {
+                        for item in course.menuitem.item {
+                            if let name = item.name, let n = item.itemsize?.nutrition {
+                                let cal  = Int(n.kcal?.replacingOccurrences(of: "kcal", with: "").trimmingCharacters(in: .whitespaces) ?? "0") ?? 0
+                                let pro  = Int(n.pro?.replacingOccurrences(of: "gm", with: "").trimmingCharacters(in: .whitespaces) ?? "0") ?? 0
+                                let fat  = Int(n.fat?.replacingOccurrences(of: "gm", with: "").trimmingCharacters(in: .whitespaces) ?? "0") ?? 0
+                                let carb = Int(n.cho?.replacingOccurrences(of: "gm", with: "").trimmingCharacters(in: .whitespaces) ?? "0") ?? 0
+                                let serving = item.itemsize?.serving_size ?? "1 serving"
+                                items.append(AIMenuItem(name: name, kcal: cal, protein: pro, fat: fat, carbs: carb, serving: serving))
+                            }
                         }
                     }
                 }
