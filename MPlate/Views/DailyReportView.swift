@@ -27,30 +27,26 @@ struct DailyReportView: View {
 
     @Environment(\.dismiss) private var dismiss
 
-    // FDA reference daily values (based on 2000 cal diet)
-    private let fdaRef: [String: Double] = [
-        "Calories":    2000,
-        "Protein":     50,
-        "Fat":         78,
-        "Carbs":       275,
-        "Fiber":       28,
-        "Sodium":      2300,
-        "Sugar":       50,
-        "Sat Fat":     20,
-        "Cholesterol": 300,
-        "Calcium":     1300,
-        "Iron":        18,
-        "Vitamin C":   90,
-        "Vitamin D":   20,
-        "Potassium":   4700
-    ]
+    // User's custom nutrient goals from Settings
+    @AppStorage("goalProtein")   private var goalProtein:   Int = 150
+    @AppStorage("goalFat")       private var goalFat:       Int = 65
+    @AppStorage("goalCarbs")     private var goalCarbs:     Int = 250
+    @AppStorage("goalFiber")     private var goalFiber:     Int = 25
+    @AppStorage("goalSodium")    private var goalSodium:    Int = 2300
+    @AppStorage("goalSugar")     private var goalSugar:     Int = 50
+    @AppStorage("goalCalcium")   private var goalCalcium:   Int = 1300
+    @AppStorage("goalIron")      private var goalIron:      Int = 18
+    @AppStorage("goalVitC")      private var goalVitC:      Int = 90
+    @AppStorage("goalVitD")      private var goalVitD:      Int = 20
+    @AppStorage("goalPotassium") private var goalPotassium: Int = 4700
 
-    // Scale FDA reference to user's calorie goal
-    private func dv(for nutrient: String, value: Int) -> Int {
-        guard let ref = fdaRef[nutrient], ref > 0 else { return 0 }
-        let scale = calorieGoal > 0 ? Double(calorieGoal) / 2000.0 : 1.0
-        let adjustedRef = ref * scale
-        return Int((Double(value) / adjustedRef) * 100)
+    // FDA values for nutrients not in user goals
+    private let fdaSatFat:     Double = 20
+    private let fdaCholesterol: Double = 300
+
+    private func pct(value: Int, goal: Int) -> Int {
+        guard goal > 0 else { return 0 }
+        return Int(Double(value) / Double(goal) * 100)
     }
 
     private var caloriePct: Int {
@@ -67,7 +63,7 @@ struct DailyReportView: View {
                     VStack(spacing: 4) {
                         Text("Today's Report")
                             .font(.title2).fontWeight(.bold)
-                        Text("% Daily Value based on \(calorieGoal) cal goal")
+                        Text("% Daily Value based on your Settings goals")
                             .font(.caption)
                             .foregroundStyle(Color.secondary)
                     }
@@ -104,24 +100,24 @@ struct DailyReportView: View {
                     // Macros section
                     sectionHeader("Macronutrients")
 
-                    reportRow(label: "Protein",      value: totalProtein,   unit: "g",   pct: dv(for: "Protein",  value: totalProtein))
-                    reportRow(label: "Fat",           value: totalFat,       unit: "g",   pct: dv(for: "Fat",      value: totalFat))
-                    reportRow(label: "Carbohydrates", value: totalCarbs,     unit: "g",   pct: dv(for: "Carbs",    value: totalCarbs))
-                    reportRow(label: "Dietary Fiber", value: totalFiber,     unit: "g",   pct: dv(for: "Fiber",    value: totalFiber))
-                    reportRow(label: "Total Sugar",   value: totalSugar,     unit: "g",   pct: dv(for: "Sugar",    value: totalSugar))
-                    reportRow(label: "Saturated Fat", value: totalSatFat,    unit: "g",   pct: dv(for: "Sat Fat",  value: totalSatFat))
-                    reportRow(label: "Cholesterol",   value: totalCholesterol, unit: "mg", pct: dv(for: "Cholesterol", value: totalCholesterol))
-                    reportRow(label: "Sodium",        value: totalSodium,    unit: "mg",  pct: dv(for: "Sodium",   value: totalSodium))
+                    reportRow(label: "Protein",      value: totalProtein,     unit: "g",   pct: pct(value: totalProtein,     goal: goalProtein))
+                    reportRow(label: "Fat",           value: totalFat,         unit: "g",   pct: pct(value: totalFat,         goal: goalFat))
+                    reportRow(label: "Carbohydrates", value: totalCarbs,       unit: "g",   pct: pct(value: totalCarbs,       goal: goalCarbs))
+                    reportRow(label: "Dietary Fiber", value: totalFiber,       unit: "g",   pct: pct(value: totalFiber,       goal: goalFiber))
+                    reportRow(label: "Total Sugar",   value: totalSugar,       unit: "g",   pct: pct(value: totalSugar,       goal: goalSugar))
+                    reportRow(label: "Saturated Fat", value: totalSatFat,      unit: "g",   pct: Int(Double(totalSatFat)      / fdaSatFat      * 100))
+                    reportRow(label: "Cholesterol",   value: totalCholesterol, unit: "mg",  pct: Int(Double(totalCholesterol) / fdaCholesterol  * 100))
+                    reportRow(label: "Sodium",        value: totalSodium,      unit: "mg",  pct: pct(value: totalSodium,      goal: goalSodium))
 
                     sectionHeader("Vitamins & Minerals")
 
-                    reportRow(label: "Calcium",   value: totalCalcium,   unit: "mg",  pct: dv(for: "Calcium",   value: totalCalcium))
-                    reportRow(label: "Iron",      value: totalIron,      unit: "mg",  pct: dv(for: "Iron",      value: totalIron))
-                    reportRow(label: "Potassium", value: totalPotassium, unit: "mg",  pct: dv(for: "Potassium", value: totalPotassium))
-                    reportRow(label: "Vitamin C", value: totalVitC,      unit: "mg",  pct: dv(for: "Vitamin C", value: totalVitC))
-                    reportRow(label: "Vitamin D", value: totalVitD,      unit: "mcg", pct: dv(for: "Vitamin D", value: totalVitD))
+                    reportRow(label: "Calcium",   value: totalCalcium,   unit: "mg",  pct: pct(value: totalCalcium,   goal: goalCalcium))
+                    reportRow(label: "Iron",      value: totalIron,      unit: "mg",  pct: pct(value: totalIron,      goal: goalIron))
+                    reportRow(label: "Potassium", value: totalPotassium, unit: "mg",  pct: pct(value: totalPotassium, goal: goalPotassium))
+                    reportRow(label: "Vitamin C", value: totalVitC,      unit: "mg",  pct: pct(value: totalVitC,      goal: goalVitC))
+                    reportRow(label: "Vitamin D", value: totalVitD,      unit: "mcg", pct: pct(value: totalVitD,      goal: goalVitD))
 
-                    Text("* % Daily Values are based on your \(calorieGoal) calorie goal, scaled from the FDA 2,000 calorie reference. Not all items may have complete nutrition data.")
+                    Text("* % Daily Values use your custom goals from Settings. Sat Fat and Cholesterol use FDA references. Not all items may have complete nutrition data.")
                         .font(.caption2)
                         .foregroundStyle(Color.secondary)
                         .multilineTextAlignment(.center)
