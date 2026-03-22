@@ -118,27 +118,27 @@ struct Homepage: SwiftUI.View {
                             }
                             if showGoalsEditor {
                                 VStack(spacing: 6) {
-                                    GoalRow(label: "Protein (g)", value: $goalProtein)
-                                    GoalRow(label: "Fat (g)", value: $goalFat)
-                                    GoalRow(label: "Carbs (g)", value: $goalCarbs)
-                                    GoalRow(label: "Fiber (g)", value: $goalFiber)
-                                    GoalRow(label: "Sodium (mg)", value: $goalSodium)
-                                    GoalRow(label: "Sugar (g)", value: $goalSugar)
-                                    GoalRow(label: "Calcium (mg)", value: $goalCalcium)
-                                    GoalRow(label: "Iron (mg)", value: $goalIron)
-                                    GoalRow(label: "Vitamin C (mg)", value: $goalVitC)
-                                    GoalRow(label: "Vitamin D (mcg)", value: $goalVitD)
-                                    GoalRow(label: "Potassium (mg)", value: $goalPotassium)
+                                    NutrientGoalRow(label: "Protein (g)", value: $goalProtein)
+                                    NutrientGoalRow(label: "Fat (g)", value: $goalFat)
+                                    NutrientGoalRow(label: "Carbs (g)", value: $goalCarbs)
+                                    NutrientGoalRow(label: "Fiber (g)", value: $goalFiber)
+                                    NutrientGoalRow(label: "Sodium (mg)", value: $goalSodium)
+                                    NutrientGoalRow(label: "Sugar (g)", value: $goalSugar)
+                                    NutrientGoalRow(label: "Calcium (mg)", value: $goalCalcium)
+                                    NutrientGoalRow(label: "Iron (mg)", value: $goalIron)
+                                    NutrientGoalRow(label: "Vitamin C (mg)", value: $goalVitC)
+                                    NutrientGoalRow(label: "Vitamin D (mcg)", value: $goalVitD)
+                                    NutrientGoalRow(label: "Potassium (mg)", value: $goalPotassium)
                                 }
                             } else {
                                 // summary chips
                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
-                                    GoalChip(label: "Protein", value: goalProtein, unit: "g")
-                                    GoalChip(label: "Fat", value: goalFat, unit: "g")
-                                    GoalChip(label: "Carbs", value: goalCarbs, unit: "g")
-                                    GoalChip(label: "Fiber", value: goalFiber, unit: "g")
-                                    GoalChip(label: "Sodium", value: goalSodium, unit: "mg")
-                                    GoalChip(label: "Sugar", value: goalSugar, unit: "g")
+                                    NutrientGoalChip(label: "Protein", value: goalProtein, unit: "g")
+                                    NutrientGoalChip(label: "Fat", value: goalFat, unit: "g")
+                                    NutrientGoalChip(label: "Carbs", value: goalCarbs, unit: "g")
+                                    NutrientGoalChip(label: "Fiber", value: goalFiber, unit: "g")
+                                    NutrientGoalChip(label: "Sodium", value: goalSodium, unit: "mg")
+                                    NutrientGoalChip(label: "Sugar", value: goalSugar, unit: "g")
                                 }
                             }
                         }
@@ -280,7 +280,7 @@ struct Homepage: SwiftUI.View {
     }
 }
 
-private struct GoalRow: View {
+private struct NutrientGoalRow: View {
     let label: String
     @Binding var value: Int
     @State private var text: String = ""
@@ -303,7 +303,7 @@ private struct GoalRow: View {
     }
 }
 
-private struct GoalChip: View {
+private struct NutrientGoalChip: View {
     let label: String
     let value: Int
     let unit: String
