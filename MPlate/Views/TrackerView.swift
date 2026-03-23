@@ -47,6 +47,12 @@ struct Tracker: SwiftUI.View {
     @StateObject private var aiService = AIService()
     @State private var refusedSuggestions: Set<String> = []
     @State private var showPhotoTracker = false
+    @State private var showFixMyDay = false
+    @State private var showWhatsGood = false
+
+    // Water intake
+    @State private var waterCups: Int = 0
+    private let waterGoalCups: Int = 8
 
     private var defaultMealForPhoto: String {
         let hour = Calendar.current.component(.hour, from: Date())
@@ -145,6 +151,63 @@ struct Tracker: SwiftUI.View {
         totalVitC        = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "vitC")
         totalVitD        = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "vitD")
         totalPotassium   = GetTotalNutrient(bitems: breakfastItems, litems: lunchItems, ditems: dinnerItems, oitems: otherItems, nutrientKey: "potassium")
+    }
+
+    /// Meals that already have logged food items
+    private var mealsAlreadyEaten: [String] {
+        var meals: [String] = []
+        if !breakfastItems.isEmpty { meals.append("Breakfast") }
+        if !lunchItems.isEmpty { meals.append("Lunch") }
+        if !dinnerItems.isEmpty { meals.append("Dinner") }
+        return meals
+    }
+
+    @MainActor
+    private func fetchFixMyDayPlan() async {
+        // Gather ALL menu items for the dining hall (all meals + other)
+        var allItems: [AIMenuItem] = []
+        MenuService.fetchMenu(diningHall: selectedDiningHall) { menu, _ in
+            allItems = buildMenuItems(from: menu)
+        }
+        let otherMenu = MenuService.loadOtherMenu(diningHall: selectedDiningHall)
+        allItems += buildMenuItems(from: otherMenu)
+
+        await aiService.getFixMyDayPlan(
+            totalCalories: totalCalories,
+            totalProtein: totalProtein,
+            totalFat: totalFat,
+            totalCarbs: totalCarbs,
+            calorieGoal: Int(CalorieGoal),
+            proteinGoal: goalProtein,
+            fatGoal: goalFat,
+            carbGoal: goalCarbs,
+            diningHall: selectedDiningHall,
+            menuItems: allItems.isEmpty ? trackerMenuItems : allItems,
+            healthGoals: healthGoals,
+            mealsEaten: mealsAlreadyEaten
+        )
+    }
+
+    @MainActor
+    private func fetchWhatsGoodToday() async {
+        let period = currentMealPeriod
+        var timeItems: [AIMenuItem] = []
+        MenuService.fetchMenu(diningHall: selectedDiningHall) { menu, _ in
+            timeItems = buildMenuItems(from: menu, mealFilter: period.filter)
+        }
+        let otherMenu = MenuService.loadOtherMenu(diningHall: selectedDiningHall)
+        timeItems += buildMenuItems(from: otherMenu)
+
+        await aiService.getWhatsGoodToday(
+            menuItems: timeItems.isEmpty ? trackerMenuItems : timeItems,
+            calorieGoal: Int(CalorieGoal),
+            proteinGoal: goalProtein,
+            fatGoal: goalFat,
+            carbGoal: goalCarbs,
+            healthGoals: healthGoals,
+            diningHall: selectedDiningHall,
+            mealPeriod: period.label
+        )
     }
 
     private func deleteItem(item: FoodItem) {
@@ -344,6 +407,63 @@ struct Tracker: SwiftUI.View {
                 .padding(.horizontal, 18)
                 .padding(.bottom, 4)
 
+                // Water intake card
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Image(systemName: "drop.fill")
+                            .foregroundStyle(Color.blue)
+                        Text("Water Intake")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                        Spacer()
+                        Text("\(waterCups)/\(waterGoalCups) cups")
+                            .font(.caption)
+                            .foregroundStyle(waterCups >= waterGoalCups ? Color.green : Color.secondary)
+                            .fontWeight(.semibold)
+                    }
+                    HStack(spacing: 6) {
+                        ForEach(0..<waterGoalCups, id: \.self) { i in
+                            Image(systemName: i < waterCups ? "drop.fill" : "drop")
+                                .font(.system(size: 18))
+                                .foregroundStyle(i < waterCups ? Color.blue : Color(.systemGray4))
+                        }
+                        Spacer()
+                        Button {
+                            if waterCups > 0 {
+                                waterCups -= 1
+                                DatabaseManager.setWaterCups(date: DatabaseManager.getCurrentDate(), cups: waterCups)
+                            }
+                        } label: {
+                            Image(systemName: "minus.circle.fill")
+                                .font(.title3)
+                                .foregroundStyle(waterCups > 0 ? Color.mBlue : Color(.systemGray4))
+                        }
+                        .disabled(waterCups <= 0)
+                        .buttonStyle(.plain)
+                        Button {
+                            waterCups += 1
+                            DatabaseManager.setWaterCups(date: DatabaseManager.getCurrentDate(), cups: waterCups)
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title3)
+                                .foregroundStyle(Color.mBlue)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    ProgressView(value: min(1.0, Double(waterCups) / Double(waterGoalCups)))
+                        .tint(waterCups >= waterGoalCups ? Color.green : Color.blue)
+                    if waterCups >= waterGoalCups {
+                        Text("Goal reached! Great hydration today.")
+                            .font(.caption2)
+                            .foregroundStyle(Color.green)
+                    }
+                }
+                .padding(12)
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+                .padding(.horizontal, 18)
+                .padding(.bottom, 4)
+
                 // AI Suggestions card
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
@@ -426,6 +546,90 @@ struct Tracker: SwiftUI.View {
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
                 .padding(.horizontal, 18)
+                .padding(.bottom, 4)
+
+                // Fix My Day button
+                Button {
+                    showFixMyDay = true
+                    Task { await fetchFixMyDayPlan() }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "wand.and.stars")
+                            .font(.caption)
+                        Text("Fix My Day")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundStyle(Color.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(
+                        LinearGradient(
+                            colors: [Color.mBlue, Color.mmaize],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .cornerRadius(12)
+                    .padding(.horizontal, 18)
+                }
+                .buttonStyle(.plain)
+                .sheet(isPresented: $showFixMyDay, onDismiss: {
+                    let date = DatabaseManager.getCurrentDate()
+                    DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Breakfast") { items in breakfastItems = items }
+                    DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Lunch") { items in lunchItems = items }
+                    DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Dinner") { items in dinnerItems = items }
+                    DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Other") { items in otherItems = items }
+                    recalculateTotals()
+                }) {
+                    FixMyDaySheet(
+                        aiService: aiService,
+                        diningHall: selectedDiningHall,
+                        totalCalories: totalCalories,
+                        totalProtein: totalProtein,
+                        totalFat: totalFat,
+                        totalCarbs: totalCarbs,
+                        calorieGoal: Int(CalorieGoal),
+                        proteinGoal: goalProtein,
+                        fatGoal: goalFat,
+                        carbGoal: goalCarbs,
+                        onRegenerate: { await fetchFixMyDayPlan() }
+                    )
+                }
+
+                // What's Good Today button
+                Button {
+                    showWhatsGood = true
+                    Task { await fetchWhatsGoodToday() }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "star.fill")
+                            .font(.caption)
+                        Text("What's Good Today?")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundStyle(Color.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(Color.mBlue)
+                    .cornerRadius(12)
+                    .padding(.horizontal, 18)
+                }
+                .buttonStyle(.plain)
+                .sheet(isPresented: $showWhatsGood) {
+                    WhatsGoodTodaySheet(
+                        aiService: aiService,
+                        diningHall: selectedDiningHall
+                    )
+                }
+
+                // Macro breakdown pie chart
+                MacroPieChartView(
+                    protein: totalProtein,
+                    fat: totalFat,
+                    carbs: totalCarbs
+                )
                 .padding(.bottom, 4)
 
                 ScrollView {
@@ -650,6 +854,7 @@ struct Tracker: SwiftUI.View {
                 recalculateTotals()
                 CalorieGoal = DatabaseManager.getCurrentCalorieGoal()
                 todayWeight = DatabaseManager.getWeightForDate(date)
+                waterCups = DatabaseManager.getWaterCups(date: date)
                 // Load menu items for AI suggestions (uses cache after first load)
                 MenuService.fetchMenu(diningHall: selectedDiningHall) { menu, _ in
                     var items = buildMenuItems(from: menu)

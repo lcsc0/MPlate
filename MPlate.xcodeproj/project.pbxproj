@@ -50,6 +50,9 @@
 		BB0009090909090909090909 /* Twigs_at_Oxford_other.json in Resources */ = {isa = PBXBuildFile; fileRef = AA0009090909090909090909 /* Twigs_at_Oxford_other.json */; };
 		CC11DD22EE33FF4400AA11BB /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD22EE33FF4400AA11BB22CC /* ViewExtensions.swift */; };
 		D0B2DF84B1A35948C3FFB092 /* AIRecommendationsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA7CEA7F48A3076AC3CD7C2 /* AIRecommendationsSheet.swift */; };
+		F1X2M3Y4D5A6B7C8D9E0F1A2 /* FixMyDaySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1X2M3Y4D5A6B7C8D9E0F1A3 /* FixMyDaySheet.swift */; };
+		A2B3C4D5E6F7A8B9C0D1E2F3 /* MacroPieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F7A8B9C0D1E2F4 /* MacroPieChartView.swift */; };
+		B3C4D5E6F7A8B9C0D1E2F3A4 /* WhatsGoodTodaySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C4D5E6F7A8B9C0D1E2F3A5 /* WhatsGoodTodaySheet.swift */; };
 		E550ABDF24F50FE4A10EA339 /* SelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47EC3D802A4F4E3456DC1641 /* SelectorView.swift */; };
 		ED402289FE1E7EB94575A9AD /* HomepageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9DE1517DA2B663A193A01E /* HomepageView.swift */; };
 		F79084E007C38A6DC5C611CD /* MenuModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DB29E0BBD35F5E27B47BD2B /* MenuModels.swift */; };
@@ -61,6 +64,9 @@
 		119B791D62BDAE4CC683D19F /* NutritionViewer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NutritionViewer.swift; sourceTree = "<group>"; };
 		135897D38E72F7229439629F /* TDEEModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TDEEModels.swift; sourceTree = "<group>"; };
 		1DA7CEA7F48A3076AC3CD7C2 /* AIRecommendationsSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIRecommendationsSheet.swift; sourceTree = "<group>"; };
+		F1X2M3Y4D5A6B7C8D9E0F1A3 /* FixMyDaySheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FixMyDaySheet.swift; sourceTree = "<group>"; };
+		A2B3C4D5E6F7A8B9C0D1E2F4 /* MacroPieChartView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacroPieChartView.swift; sourceTree = "<group>"; };
+		B3C4D5E6F7A8B9C0D1E2F3A5 /* WhatsGoodTodaySheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WhatsGoodTodaySheet.swift; sourceTree = "<group>"; };
 		313594732D2A020200AF9D5F /* special_menu.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = special_menu.json; sourceTree = "<group>"; };
 		3172A12F2CBC4CD400BDD5BC /* MPlate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MPlate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3172A1362CBC4CD500BDD5BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -246,6 +252,9 @@
 				47EC3D802A4F4E3456DC1641 /* SelectorView.swift */,
 				C2506BF560BC187E86D05A4B /* CustomFoodView.swift */,
 				1DA7CEA7F48A3076AC3CD7C2 /* AIRecommendationsSheet.swift */,
+				F1X2M3Y4D5A6B7C8D9E0F1A3 /* FixMyDaySheet.swift */,
+				A2B3C4D5E6F7A8B9C0D1E2F4 /* MacroPieChartView.swift */,
+				B3C4D5E6F7A8B9C0D1E2F3A5 /* WhatsGoodTodaySheet.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -418,6 +427,9 @@
 				E550ABDF24F50FE4A10EA339 /* SelectorView.swift in Sources */,
 				90A0F6CB9A47DACDDA0F5976 /* CustomFoodView.swift in Sources */,
 				D0B2DF84B1A35948C3FFB092 /* AIRecommendationsSheet.swift in Sources */,
+				F1X2M3Y4D5A6B7C8D9E0F1A2 /* FixMyDaySheet.swift in Sources */,
+				A2B3C4D5E6F7A8B9C0D1E2F3 /* MacroPieChartView.swift in Sources */,
+				B3C4D5E6F7A8B9C0D1E2F3A4 /* WhatsGoodTodaySheet.swift in Sources */,
 				7548ACE117A5AE17B89397B1 /* ToggleManager.swift in Sources */,
 				CC11DD22EE33FF4400AA11BB /* ViewExtensions.swift in Sources */,
 				9D4756F3962F9FFF129188DE /* MPlateApp.swift in Sources */,

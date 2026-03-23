@@ -88,6 +88,15 @@ class DatabaseManager {
         try? dbQueue.write { db in
             try db.execute(sql: "ALTER TABLE user ADD COLUMN adaptive_tdee INTEGER NOT NULL DEFAULT 0")
         }
+
+        // Water intake log table
+        try dbQueue.write { db in
+            try db.create(table: "water_log", ifNotExists: true) { t in
+                t.autoIncrementedPrimaryKey("id")
+                t.column("date", .text).notNull().unique()
+                t.column("cups", .integer).notNull().defaults(to: 0)
+            }
+        }
     }
 
     // MARK: - Basic writes
@@ -463,6 +472,35 @@ class DatabaseManager {
         } catch {
             print("Error loading weight trend: \(error)")
             return []
+        }
+    }
+
+    // MARK: - Water intake
+
+    static func getWaterCups(date: String) -> Int {
+        do {
+            return try dbQueue.read { db in
+                try Int.fetchOne(db, sql: "SELECT cups FROM water_log WHERE date = ?", arguments: [date]) ?? 0
+            }
+        } catch {
+            print("Error fetching water: \(error)")
+            return 0
+        }
+    }
+
+    static func setWaterCups(date: String, cups: Int) {
+        do {
+            try dbQueue.write { db in
+                try db.execute(
+                    sql: """
+                    INSERT INTO water_log (date, cups) VALUES (?, ?)
+                    ON CONFLICT(date) DO UPDATE SET cups = excluded.cups
+                    """,
+                    arguments: [date, cups]
+                )
+            }
+        } catch {
+            print("Error setting water: \(error)")
         }
     }
 
