@@ -10,6 +10,20 @@
 //
 
 import Foundation
+import UIKit
+
+// MARK: - Photo food item model
+
+struct PhotoFoodItem: Identifiable {
+    let id = UUID()
+    let name: String
+    let portionDescription: String
+    let calories: Int
+    let protein: Int
+    let fat: Int
+    let carbs: Int
+    var isSelected: Bool = true
+}
 
 // MARK: - Output model
 
@@ -44,6 +58,12 @@ class AIService: ObservableObject {
     @Published var isLoading = false
     @Published var suggestion: MealSuggestion?
     @Published var errorMessage: String?
+
+    // MARK: - Photo analysis published state
+    @Published var photoItems: [PhotoFoodItem] = []
+    @Published var photoSummary: String = ""
+    @Published var isPhotoAnalyzing: Bool = false
+    @Published var photoError: String?
 
     private var apiKey: String {
         UserDefaults.standard.string(forKey: "anthropicApiKey") ?? ""
@@ -270,7 +290,196 @@ class AIService: ObservableObject {
         return trimmed
     }
 
+    // MARK: - Photo analysis
+
+    func analyzeFoodPhoto(_ image: UIImage) async {
+        guard !apiKey.isEmpty else {
+            photoError = "Add your Anthropic API key in Settings to enable AI photo analysis."
+            return
+        }
+        isPhotoAnalyzing = true
+        photoError = nil
+        photoItems = []
+        photoSummary = ""
+
+        guard let imageData = compressImage(image) else {
+            photoError = "Could not compress image."
+            isPhotoAnalyzing = false
+            return
+        }
+        let base64 = imageData.base64EncodedString()
+
+        let messages: [[String: Any]] = [[
+            "role": "user",
+            "content": [
+                [
+                    "type": "image",
+                    "source": [
+                        "type": "base64",
+                        "media_type": "image/jpeg",
+                        "data": base64
+                    ]
+                ],
+                [
+                    "type": "text",
+                    "text": "Identify all food items visible. For each item estimate portion size using visual cues (plate size, utensils, standard portions) and provide nutritional info. Return ONLY valid JSON: {\"summary\": \"brief description\", \"items\": [{\"name\": \"food name\", \"portionDescription\": \"~180g / 1 cup\", \"calories\": 200, \"protein\": 30, \"fat\": 5, \"carbs\": 10}]}"
+                ]
+            ]
+        ]]
+
+        let system = "You are a precise food portion analyst. Estimate realistic nutrition values for what's visible. Be specific about portions. Only return valid JSON, no markdown."
+
+        do {
+            let raw = try await callClaudeVision(system: system, messages: messages, maxTokens: 900)
+            parsePhotoResponse(raw)
+        } catch {
+            photoError = "AI error: \(error.localizedDescription)"
+        }
+
+        isPhotoAnalyzing = false
+    }
+
+    func analyzeBeforeAfterPhotos(before: UIImage, after: UIImage) async {
+        guard !apiKey.isEmpty else {
+            photoError = "Add your Anthropic API key in Settings to enable AI photo analysis."
+            return
+        }
+        isPhotoAnalyzing = true
+        photoError = nil
+        photoItems = []
+        photoSummary = ""
+
+        guard let beforeData = compressImage(before),
+              let afterData = compressImage(after) else {
+            photoError = "Could not compress images."
+            isPhotoAnalyzing = false
+            return
+        }
+
+        let messages: [[String: Any]] = [[
+            "role": "user",
+            "content": [
+                [
+                    "type": "image",
+                    "source": [
+                        "type": "base64",
+                        "media_type": "image/jpeg",
+                        "data": beforeData.base64EncodedString()
+                    ]
+                ],
+                [
+                    "type": "image",
+                    "source": [
+                        "type": "base64",
+                        "media_type": "image/jpeg",
+                        "data": afterData.base64EncodedString()
+                    ]
+                ],
+                [
+                    "type": "text",
+                    "text": "The first image shows a plate BEFORE eating. The second image shows the SAME plate AFTER eating. Compare them and estimate what was consumed (what's missing or reduced). Return ONLY valid JSON: {\"summary\": \"what was consumed\", \"items\": [{\"name\": \"food consumed\", \"portionDescription\": \"amount eaten e.g. ~120g / half portion\", \"calories\": 150, \"protein\": 20, \"fat\": 4, \"carbs\": 5}]}"
+                ]
+            ]
+        ]]
+
+        let system = "You are a precise food portion analyst. Estimate realistic nutrition values for what's visible. Be specific about portions. Only return valid JSON, no markdown."
+
+        do {
+            let raw = try await callClaudeVision(system: system, messages: messages, maxTokens: 900)
+            parsePhotoResponse(raw)
+        } catch {
+            photoError = "AI error: \(error.localizedDescription)"
+        }
+
+        isPhotoAnalyzing = false
+    }
+
+    private func compressImage(_ image: UIImage, maxBytes: Int = 1_000_000) -> Data? {
+        var quality: CGFloat = 0.7
+        guard var data = image.jpegData(compressionQuality: quality) else { return nil }
+        while data.count > maxBytes && quality > 0.1 {
+            quality -= 0.1
+            data = image.jpegData(compressionQuality: quality) ?? data
+        }
+        if data.count > maxBytes {
+            // Scale down the image
+            let scale = sqrt(Double(maxBytes) / Double(data.count))
+            let newSize = CGSize(width: image.size.width * scale, height: image.size.height * scale)
+            let renderer = UIGraphicsImageRenderer(size: newSize)
+            let resized = renderer.image { _ in image.draw(in: CGRect(origin: .zero, size: newSize)) }
+            data = resized.jpegData(compressionQuality: 0.7) ?? data
+        }
+        return data
+    }
+
+    private func parsePhotoResponse(_ raw: String) {
+        let cleaned = extractJSON(from: raw)
+        guard let data = cleaned.data(using: .utf8),
+              let decoded = try? JSONDecoder().decode(PhotoResponse.self, from: data) else {
+            photoError = "Could not parse AI response."
+            return
+        }
+        photoSummary = decoded.summary
+        photoItems = decoded.items.map {
+            PhotoFoodItem(
+                name: $0.name,
+                portionDescription: $0.portionDescription,
+                calories: $0.calories,
+                protein: $0.protein,
+                fat: $0.fat,
+                carbs: $0.carbs
+            )
+        }
+    }
+
+    private func callClaudeVision(system: String, messages: [[String: Any]], maxTokens: Int = 900) async throws -> String {
+        let url = URL(string: "https://api.anthropic.com/v1/messages")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
+        request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
+
+        let body: [String: Any] = [
+            "model": "claude-haiku-4-5-20251001",
+            "max_tokens": maxTokens,
+            "system": system,
+            "messages": messages
+        ]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+        if http.statusCode != 200 {
+            let bodyStr = String(data: data, encoding: .utf8) ?? "unknown error"
+            throw NSError(domain: "AIService", code: http.statusCode,
+                          userInfo: [NSLocalizedDescriptionKey: "API error \(http.statusCode): \(bodyStr)"])
+        }
+
+        struct ClaudeResponse: Codable {
+            struct Content: Codable { let text: String }
+            let content: [Content]
+        }
+        let decoded = try JSONDecoder().decode(ClaudeResponse.self, from: data)
+        return decoded.content.first?.text ?? ""
+    }
+
     // MARK: - Codable response models
+
+    private struct PhotoResponse: Codable {
+        let summary: String
+        let items: [Item]
+        struct Item: Codable {
+            let name: String
+            let portionDescription: String
+            let calories: Int
+            let protein: Int
+            let fat: Int
+            let carbs: Int
+        }
+    }
 
     private struct RecommendationResponse: Codable {
         let summary: String

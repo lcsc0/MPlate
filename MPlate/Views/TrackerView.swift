@@ -46,6 +46,15 @@ struct Tracker: SwiftUI.View {
 
     @StateObject private var aiService = AIService()
     @State private var refusedSuggestions: Set<String> = []
+    @State private var showPhotoTracker = false
+
+    private var defaultMealForPhoto: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        if hour >= 7 && hour < 11 { return "Breakfast" }
+        if hour >= 11 && hour < 15 { return "Lunch" }
+        if hour >= 15 && hour < 21 { return "Dinner" }
+        return "Other"
+    }
 
     // Returns the active meal period name and label based on current hour
     private var currentMealPeriod: (filter: String, label: String) {
@@ -151,6 +160,14 @@ struct Tracker: SwiftUI.View {
                         .multilineTextAlignment(.leading)
                         .padding(.horizontal, 25)
                     Spacer()
+                    Button {
+                        showPhotoTracker = true
+                    } label: {
+                        Image(systemName: "camera.fill")
+                            .font(.title2)
+                            .foregroundStyle(Color.mBlue)
+                    }
+                    .padding(.trailing, 8)
                     Text("Maize")
                         .font(.largeTitle)
                         .fontWeight(.bold)
@@ -554,6 +571,16 @@ struct Tracker: SwiftUI.View {
                     items += buildMenuItems(from: otherMenu)
                     trackerMenuItems = items
                 }
+            }
+            .sheet(isPresented: $showPhotoTracker, onDismiss: {
+                let date = DatabaseManager.getCurrentDate()
+                DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Breakfast") { items in breakfastItems = items }
+                DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Lunch") { items in lunchItems = items }
+                DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Dinner") { items in dinnerItems = items }
+                DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Other") { items in otherItems = items }
+                recalculateTotals()
+            }) {
+                FoodPhotoView(mealName: defaultMealForPhoto)
             }
             Spacer()
         }
