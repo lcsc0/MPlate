@@ -14,7 +14,7 @@ import UIKit
 
 // MARK: - Photo food item model
 
-struct PhotoFoodItem: Identifiable {
+struct PhotoFoodItem: Identifiable, Equatable {
     let id = UUID()
     let name: String
     let portionDescription: String
