@@ -98,12 +98,6 @@ struct Tracker: SwiftUI.View {
         let otherMenu = MenuService.loadOtherMenu(diningHall: selectedDiningHall)
         timeItems += buildMenuItems(from: otherMenu)
 
-        let allEaten = (breakfastItems + lunchItems + dinnerItems).map {
-            let qty = Double($0.qty) ?? 1
-            let cal = Int(parseNutrientValue($0.kcal) * qty)
-            return "\($0.name) (qty \($0.qty)) — \(cal) cal"
-        }
-
         await aiService.getTrackerSuggestions(
             totalCalories: totalCalories,
             totalProtein: totalProtein,
@@ -115,7 +109,6 @@ struct Tracker: SwiftUI.View {
             carbGoal: goalCarbs,
             diningHall: selectedDiningHall,
             menuItems: timeItems.isEmpty ? trackerMenuItems : timeItems,
-            alreadyEaten: allEaten,
             healthGoals: healthGoals,
             refusedItems: Array(refusedSuggestions),
             mealPeriod: period.label

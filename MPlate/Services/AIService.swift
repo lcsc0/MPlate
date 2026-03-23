@@ -62,7 +62,6 @@ class AIService: ObservableObject {
         carbGoal: Int,
         diningHall: String,
         menuItems: [AIMenuItem],
-        alreadyEaten: [String],
         healthGoals: String,
         refusedItems: [String] = [],
         mealPeriod: String = ""
@@ -81,13 +80,6 @@ class AIService: ObservableObject {
         let remainingFat = max(0, fatGoal      - totalFat)
         let remainingCarb = max(0, carbGoal    - totalCarbs)
         let pct = calorieGoal > 0 ? Int(Double(totalCalories) / Double(calorieGoal) * 100) : 0
-
-        let eatenSection: String
-        if alreadyEaten.isEmpty {
-            eatenSection = "Nothing logged yet today."
-        } else {
-            eatenSection = alreadyEaten.joined(separator: "\n")
-        }
 
         let menuList: String
         if menuItems.isEmpty {
@@ -115,9 +107,6 @@ class AIService: ObservableObject {
 
         Daily targets: \(calorieGoal) cal | \(proteinGoal)g protein | \(fatGoal)g fat | \(carbGoal)g carbs
 
-        Already eaten today:
-        \(eatenSection)
-
         Items the user does NOT want suggested:
         \(refusedSection)
 
@@ -126,12 +115,12 @@ class AIService: ObservableObject {
         Available items for this meal period (name | serving size | calories | protein | fat | carbs):
         \(menuList)
 
-        Based on what the user has already eaten, their health goals, and the current meal period, recommend 3–5 specific items from the list above. Do NOT suggest refused items. Avoid re-suggesting meal dishes already logged, but freely suggest staples (fruit, condiments, beverages, etc.) — users eat these multiple times a day. Include exact portion and brief reason.
+        Based on the user's health goals and the current meal period, recommend 3–5 specific items from the list above. Do NOT suggest refused items. Include exact portion and brief reason.
         """
 
         let systemPrompt = """
         You are a concise, personalized nutrition coach for a University of Michigan student eating in dining halls.
-        Always consider the user's health goals, the current meal period, and what they have already eaten today.
+        Always consider the user's health goals and the current meal period.
         Recommend specific items from the EXACT list provided — do not invent items.
         Use item names EXACTLY as written. Each suggestion must include a concrete portion amount.
         Never suggest an item the user has refused.
