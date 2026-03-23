@@ -18,6 +18,7 @@ struct Homepage: SwiftUI.View {
     @State private var calorieGoalInput: String = ""
     @State private var calorieGoalSaved = false
     @State private var currentCalorieGoal: Int64 = 2000
+    @State private var adaptiveTDEE: Bool = false
     @AppStorage("goalProtein") private var goalProtein: Int = 150
     @AppStorage("goalFat") private var goalFat: Int = 65
     @AppStorage("goalCarbs") private var goalCarbs: Int = 250
@@ -103,7 +104,73 @@ struct Homepage: SwiftUI.View {
                         .padding(.top, 20)
                         .onAppear {
                             currentCalorieGoal = DatabaseManager.getCurrentCalorieGoal()
+                            adaptiveTDEE = DatabaseManager.isAdaptiveTDEEEnabled()
                         }
+
+                        // Adaptive TDEE
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                                    .foregroundStyle(Color.mmaize)
+                                Text("Adaptive Calories")
+                                    .font(.headline)
+                                Spacer()
+                                Toggle("", isOn: $adaptiveTDEE)
+                                    .labelsHidden()
+                                    .onChange(of: adaptiveTDEE) { _, newVal in
+                                        DatabaseManager.setAdaptiveTDEE(newVal)
+                                        if newVal {
+                                            if let newGoal = DatabaseManager.applyAdaptiveGoalIfNeeded() {
+                                                currentCalorieGoal = Int64(newGoal)
+                                            }
+                                        }
+                                    }
+                            }
+                            Text("Log your morning weight daily. After 7+ days, your calorie goal auto-adjusts based on your actual metabolic rate (energy balance equation).")
+                                .font(.caption)
+                                .foregroundStyle(Color.gray)
+                            if adaptiveTDEE {
+                                let weights = DatabaseManager.loadWeightTrend(days: 28)
+                                let cals = DatabaseManager.loadCalorieTrend(days: 28)
+                                if let tdee = AdaptiveTDEE.calculate(weights: weights, dailyCalories: cals) {
+                                    HStack(spacing: 12) {
+                                        VStack(spacing: 2) {
+                                            Text("Estimated TDEE")
+                                                .font(.caption2)
+                                                .foregroundStyle(Color.gray)
+                                            Text("\(tdee)")
+                                                .font(.title3)
+                                                .fontWeight(.bold)
+                                                .foregroundStyle(Color.mBlue)
+                                        }
+                                        VStack(spacing: 2) {
+                                            Text("Adjusted Goal")
+                                                .font(.caption2)
+                                                .foregroundStyle(Color.gray)
+                                            Text("\(currentCalorieGoal)")
+                                                .font(.title3)
+                                                .fontWeight(.bold)
+                                                .foregroundStyle(Color.mmaize)
+                                        }
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 4)
+                                } else {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "info.circle")
+                                            .font(.caption2)
+                                        Text("Log weight for 7+ days to enable auto-adjustment.")
+                                            .font(.caption)
+                                    }
+                                    .foregroundStyle(Color.secondary)
+                                }
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                        .padding(.top, 20)
 
                         // Health Goals
                         VStack(alignment: .leading, spacing: 8) {

@@ -74,6 +74,20 @@ class DatabaseManager {
                 try db.execute(sql: "ALTER TABLE fooditems ADD COLUMN \(col) TEXT NOT NULL DEFAULT '\(def)'")
             }
         }
+
+        // Weight log table
+        try dbQueue.write { db in
+            try db.create(table: "weight_log", ifNotExists: true) { t in
+                t.autoIncrementedPrimaryKey("id")
+                t.column("date", .text).notNull().unique()
+                t.column("weight", .double).notNull()  // lbs
+            }
+        }
+
+        // Adaptive TDEE toggle column on user table
+        try? dbQueue.write { db in
+            try db.execute(sql: "ALTER TABLE user ADD COLUMN adaptive_tdee INTEGER NOT NULL DEFAULT 0")
+        }
     }
 
     // MARK: - Basic writes
@@ -391,5 +405,114 @@ class DatabaseManager {
             throw NSError(domain: "DatabaseManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "Could not find meal ID"])
         }
         return validMealID
+    }
+
+    // MARK: - Weight logging
+
+    static func logWeight(date: String, weight: Double) {
+        do {
+            try dbQueue.write { db in
+                try db.execute(
+                    sql: """
+                    INSERT INTO weight_log (date, weight) VALUES (?, ?)
+                    ON CONFLICT(date) DO UPDATE SET weight = excluded.weight
+                    """,
+                    arguments: [date, weight]
+                )
+            }
+        } catch {
+            print("Error logging weight: \(error)")
+        }
+    }
+
+    static func getWeightForDate(_ date: String) -> Double? {
+        do {
+            return try dbQueue.read { db in
+                try Double.fetchOne(db, sql: "SELECT weight FROM weight_log WHERE date = ?", arguments: [date])
+            }
+        } catch {
+            print("Error fetching weight: \(error)")
+            return nil
+        }
+    }
+
+    static func deleteWeight(date: String) {
+        do {
+            try dbQueue.write { db in
+                try db.execute(sql: "DELETE FROM weight_log WHERE date = ?", arguments: [date])
+            }
+        } catch {
+            print("Error deleting weight: \(error)")
+        }
+    }
+
+    static func loadWeightTrend(days: Int) -> [WeightEntry] {
+        do {
+            let cutoff = Calendar.current.date(byAdding: .day, value: -days, to: Date()) ?? Date()
+            let f = DateFormatter()
+            f.dateFormat = "yyyy-MM-dd"
+            let cutoffStr = f.string(from: cutoff)
+            return try dbQueue.read { db in
+                let rows = try Row.fetchAll(db,
+                    sql: "SELECT id, date, weight FROM weight_log WHERE date >= ? ORDER BY date",
+                    arguments: [cutoffStr])
+                return rows.map { row in
+                    WeightEntry(id: row["id"], date: row["date"], weight: row["weight"])
+                }
+            }
+        } catch {
+            print("Error loading weight trend: \(error)")
+            return []
+        }
+    }
+
+    // MARK: - Adaptive TDEE
+
+    static func isAdaptiveTDEEEnabled() -> Bool {
+        do {
+            return try dbQueue.read { db in
+                let row = try Row.fetchOne(db, sql: "SELECT adaptive_tdee FROM user WHERE id = 1")
+                return (row?["adaptive_tdee"] as? Int64 ?? 0) != 0
+            }
+        } catch { return false }
+    }
+
+    static func setAdaptiveTDEE(_ enabled: Bool) {
+        do {
+            try dbQueue.write { db in
+                try db.execute(sql: "UPDATE user SET adaptive_tdee = ? WHERE id = 1", arguments: [enabled ? 1 : 0])
+            }
+        } catch {
+            print("Error setting adaptive TDEE: \(error)")
+        }
+    }
+
+    /// Recalculates and applies the adaptive calorie goal if enabled.
+    /// Returns the new goal if it was adjusted, nil otherwise.
+    @discardableResult
+    static func applyAdaptiveGoalIfNeeded() -> Int? {
+        guard isAdaptiveTDEEEnabled() else { return nil }
+
+        let weights = loadWeightTrend(days: 28)
+        let calories = loadCalorieTrend(days: 28)
+
+        guard let actualTDEE = AdaptiveTDEE.calculate(weights: weights, dailyCalories: calories) else {
+            return nil
+        }
+
+        // Get current weight plan
+        let weightPlan: String
+        do {
+            weightPlan = try dbQueue.read { db in
+                let row = try Row.fetchOne(db, sql: "SELECT weightplan FROM user WHERE id = 1")
+                return (row?["weightplan"] as? String) ?? "maintain"
+            }
+        } catch {
+            return nil
+        }
+
+        let newGoal = AdaptiveTDEE.suggestedGoal(actualTDEE: actualTDEE, weightPlan: weightPlan)
+        setCalorieGoal(Int64(newGoal))
+        return newGoal
     }
 }

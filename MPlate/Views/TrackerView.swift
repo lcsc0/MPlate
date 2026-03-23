@@ -56,6 +56,12 @@ struct Tracker: SwiftUI.View {
         return "Other"
     }
 
+    // Weight logging
+    @State private var weightInput: String = ""
+    @State private var todayWeight: Double? = nil
+    @State private var weightSaved: Bool = false
+    @State private var adaptiveGoalMessage: String? = nil
+
     // Returns the active meal period name and label based on current hour
     private var currentMealPeriod: (filter: String, label: String) {
         let hour = Calendar.current.component(.hour, from: Date())
@@ -258,6 +264,85 @@ struct Tracker: SwiftUI.View {
                     }
                     .presentationDetents([.medium, .large])
                 }
+
+                // Morning weight card
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Image(systemName: "scalemass.fill")
+                            .foregroundStyle(Color.mBlue)
+                        Text("Morning Weight")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                        Spacer()
+                        if let w = todayWeight {
+                            Text(String(format: "%.1f lbs", w))
+                                .font(.caption)
+                                .foregroundStyle(Color.mBlue)
+                                .fontWeight(.semibold)
+                        }
+                    }
+                    HStack(spacing: 8) {
+                        TextField("e.g. 155.2", text: $weightInput)
+                            .keyboardType(.decimalPad)
+                            .textFieldStyle(.roundedBorder)
+                        Text("lbs")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Button(todayWeight == nil ? "Log" : "Update") {
+                            if let w = Double(weightInput.trimmingCharacters(in: .whitespaces)), w > 0, w < 1000 {
+                                let date = DatabaseManager.getCurrentDate()
+                                DatabaseManager.logWeight(date: date, weight: w)
+                                todayWeight = w
+                                weightInput = ""
+                                weightSaved = true
+                                // Try adaptive adjustment
+                                if let newGoal = DatabaseManager.applyAdaptiveGoalIfNeeded() {
+                                    CalorieGoal = Int64(newGoal)
+                                    adaptiveGoalMessage = "Goal auto-adjusted to \(newGoal) kcal"
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                    weightSaved = false
+                                    adaptiveGoalMessage = nil
+                                }
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(Color.mBlue)
+                        .disabled(Double(weightInput.trimmingCharacters(in: .whitespaces)) == nil)
+                        if todayWeight != nil {
+                            Button {
+                                let date = DatabaseManager.getCurrentDate()
+                                DatabaseManager.deleteWeight(date: date)
+                                todayWeight = nil
+                                weightInput = ""
+                            } label: {
+                                Image(systemName: "trash")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.red)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    if weightSaved {
+                        Text("Weight logged!")
+                            .font(.caption)
+                            .foregroundStyle(Color.green)
+                    }
+                    if let msg = adaptiveGoalMessage {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.triangle.2.circlepath")
+                                .font(.caption2)
+                            Text(msg)
+                                .font(.caption)
+                        }
+                        .foregroundStyle(Color.mmaize)
+                    }
+                }
+                .padding(12)
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+                .padding(.horizontal, 18)
+                .padding(.bottom, 4)
 
                 // AI Suggestions card
                 VStack(alignment: .leading, spacing: 8) {
@@ -564,6 +649,7 @@ struct Tracker: SwiftUI.View {
                 DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Other") { items in otherItems = items }
                 recalculateTotals()
                 CalorieGoal = DatabaseManager.getCurrentCalorieGoal()
+                todayWeight = DatabaseManager.getWeightForDate(date)
                 // Load menu items for AI suggestions (uses cache after first load)
                 MenuService.fetchMenu(diningHall: selectedDiningHall) { menu, _ in
                     var items = buildMenuItems(from: menu)

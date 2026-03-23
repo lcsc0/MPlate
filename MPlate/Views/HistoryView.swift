@@ -20,6 +20,7 @@ struct History: SwiftUI.View {
     @State private var selectedDate: Date = Date()
     @State private var calorieTrend: [DayCalories] = []
     @State private var trendPeriod: TrendPeriod = .oneMonth
+    @State private var weightTrend: [WeightEntry] = []
 
     private func formattedCurrentDate() -> String {
         let formatter = DateFormatter()
@@ -30,6 +31,7 @@ struct History: SwiftUI.View {
     private func refreshView() {
         CalorieGoal = DatabaseManager.getCurrentCalorieGoal()
         calorieTrend = DatabaseManager.loadCalorieTrend(days: trendPeriod.days)
+        weightTrend = DatabaseManager.loadWeightTrend(days: trendPeriod.days)
         let date = formattedCurrentDate()
         DatabaseManager.getFoodItemsForMeal(date: date, mealname: "Breakfast") { items in
             breakfastItems = items
@@ -100,6 +102,7 @@ struct History: SwiftUI.View {
                         .padding(.horizontal)
                         .onChange(of: trendPeriod) { _, _ in
                             calorieTrend = DatabaseManager.loadCalorieTrend(days: trendPeriod.days)
+                            weightTrend = DatabaseManager.loadWeightTrend(days: trendPeriod.days)
                         }
                         if !calorieTrend.isEmpty {
                             Chart {
@@ -145,6 +148,54 @@ struct History: SwiftUI.View {
                         }
                     }
                     .padding(.vertical, 8)
+
+                    // Weight trend chart
+                    if !weightTrend.isEmpty {
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Image(systemName: "scalemass.fill")
+                                    .foregroundStyle(Color.mBlue)
+                                    .font(.caption)
+                                Text("Weight Trend")
+                                    .font(.headline)
+                                Spacer()
+                                if let latest = weightTrend.last {
+                                    Text(String(format: "%.1f lbs", latest.weight))
+                                        .font(.caption)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(Color.mBlue)
+                                }
+                            }
+                            .padding(.horizontal)
+
+                            Chart {
+                                ForEach(weightTrend) { point in
+                                    LineMark(
+                                        x: .value("Date", point.dateValue),
+                                        y: .value("Weight", point.weight)
+                                    )
+                                    .foregroundStyle(Color.mmaize)
+                                    .interpolationMethod(.catmullRom)
+                                    PointMark(
+                                        x: .value("Date", point.dateValue),
+                                        y: .value("Weight", point.weight)
+                                    )
+                                    .foregroundStyle(Color.mmaize)
+                                    .symbolSize(20)
+                                }
+                            }
+                            .frame(height: 140)
+                            .padding(.horizontal)
+                            .chartXAxis {
+                                AxisMarks(values: .automatic) { _ in
+                                    AxisGridLine()
+                                    AxisValueLabel(format: .dateTime.month(.abbreviated).day())
+                                }
+                            }
+                            .chartYScale(domain: .automatic(includesZero: false))
+                        }
+                        .padding(.vertical, 8)
+                    }
 
                     DatePicker("Select Date:", selection: $selectedDate, displayedComponents: .date)
                         .datePickerStyle(GraphicalDatePickerStyle())
