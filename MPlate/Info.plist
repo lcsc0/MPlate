@@ -3,6 +3,8 @@
 <plist version="1.0">
 <dict>
     <key>NSCameraUsageDescription</key>
-    <string>Used to scan food barcodes and look up nutritional information.</string>
+    <string>Used to scan food barcodes, take food photos, and look up nutritional information.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Used to select food photos for nutritional analysis.</string>
 </dict>
 </plist>
